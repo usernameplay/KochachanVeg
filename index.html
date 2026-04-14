@@ -3,20 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Vegetable Shop</title>
+    <title>Professional Vegetable Shop - Vishu Special</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: 'Manjari', sans-serif; }
         @media print { .no-print { display: none; } }
+        
+        /* Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 20s linear infinite;
+        }
+        .marquee-container:hover .animate-marquee {
+            animation-play-state: paused;
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
 
     <header class="bg-green-800 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-            <button onclick="openModal()" class="bg-white text-green-800 px-5 py-2 rounded-full font-bold shadow hover:bg-green-100 no-print">
+            <button onclick="openModal()" class="bg-white text-green-800 px-5 py-2 rounded-full font-bold shadow hover:bg-green-100 no-print transition">
                 <i class="fas fa-plus mr-1"></i> Add Item
             </button>
 
@@ -29,12 +43,27 @@
         </div>
     </header>
 
+    <div class="marquee-container bg-yellow-400 overflow-hidden py-1.5 border-b border-yellow-500 shadow-inner no-print">
+        <div class="animate-marquee">
+            <span class="text-green-900 font-bold text-sm md:text-base">
+                <i class="fas fa-om mx-2 text-orange-600"></i> ഏവർക്കും ഐശ്വര്യപൂർണ്ണമായ വിഷു ആശംസകൾ! 
+                <span class="mx-10 text-orange-700 font-black">🌼 HAPPY VISHU 🌼</span>
+                വിഷു പ്രമാണിച്ച് എല്ലാ പച്ചക്കറികൾക്കും പ്രത്യേക ഡിസ്കൗണ്ട് ലഭ്യമാണ്.
+                <span class="mx-10 text-orange-700 font-black">🌼 HAPPY VISHU 🌼</span>
+                ഏവർക്കും ഐശ്വര്യപൂർണ്ണമായ വിഷു ആശംസകൾ!
+            </span>
+        </div>
+    </div>
+
     <main class="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <div class="lg:col-span-2 space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 no-print">
-                <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="പച്ചക്കറി തിരയുക (Search)..." 
-                    class="w-full p-3 border-2 border-slate-100 rounded-lg outline-none focus:border-green-500 transition">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-4 text-slate-400"></i>
+                    <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="പച്ചക്കറി തിരയുക (Search)..." 
+                        class="w-full pl-10 p-3 border-2 border-slate-100 rounded-lg outline-none focus:border-green-500 transition">
+                </div>
             </div>
 
             <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -42,25 +71,25 @@
         </div>
 
         <div class="lg:col-span-1">
-            <div class="bg-white p-6 rounded-2xl shadow-xl border border-green-100 sticky top-24">
+            <div class="bg-white p-6 rounded-2xl shadow-xl border border-green-100 sticky top-28">
                 <h3 class="text-lg font-bold mb-4 border-b pb-2 flex justify-between items-center text-slate-700">
                     <span>🛒 കറന്റ് ബില്ല്</span>
                     <span class="text-xs font-normal text-slate-400">Items: <span id="itemCount">0</span></span>
                 </h3>
                 
-                <div id="cartList" class="space-y-3 mb-6 max-h-80 overflow-y-auto min-h-[100px]">
+                <div id="cartList" class="space-y-3 mb-6 max-h-[40vh] overflow-y-auto min-h-[100px] scrollbar-hide">
                     <p class="text-slate-400 text-center py-10 text-sm">ബില്ലിൽ ഐറ്റങ്ങൾ ഒന്നുമില്ല</p>
                 </div>
 
                 <div class="border-t-2 border-dashed pt-4 space-y-3 text-slate-800">
                     <div class="flex justify-between text-2xl font-black text-green-700">
-                        <span>Grand Total:</span>
+                        <span>Total:</span>
                         <span>₹<span id="grandTotal">0</span></span>
                     </div>
-                    <button onclick="window.print()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-green-700 no-bag transition">
-                        <i class="fas fa-print mr-2"></i> Total 
+                    <button onclick="window.print()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-green-700 transition">
+                        <i class="fas fa-print mr-2"></i> Print Bill 
                     </button>
-                    <button onclick="clearCart()" class="w-full py-2 text-red-500 text-sm font-medium no-print">Clear All</button>
+                    <button onclick="clearCart()" class="w-full py-2 text-red-500 text-sm font-medium no-print hover:underline transition">Clear All Items</button>
                 </div>
             </div>
         </div>
@@ -86,16 +115,15 @@
                     </div>
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <button onclick="saveItem()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 shadow-md">SAVE</button>
-                    <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200">CANCEL</button>
+                    <button onclick="saveItem()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 shadow-md transition">SAVE</button>
+                    <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200 transition">CANCEL</button>
                 </div>
-                <button id="deleteBtn" onclick="deleteItem()" class="w-full text-red-500 text-xs font-bold uppercase tracking-widest hidden">Delete from List</button>
+                <button id="deleteBtn" onclick="deleteItem()" class="w-full text-red-500 text-xs font-bold uppercase tracking-widest pt-2 hidden">Delete from List</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Initial Data with more vegetables
         const defaultList = [
             { name: 'തക്കാളി', price: 45, icon: '🍅' },
             { name: 'സവാള', price: 60, icon: '🧅' },
@@ -110,7 +138,6 @@
         let vegetables = JSON.parse(localStorage.getItem('vegInventory')) || defaultList;
         let cart = [];
 
-        // 1. Clock & Updates
         function tick() {
             document.getElementById('liveClock').innerText = new Date().toLocaleString('ml-IN', {
                 hour: '2-digit', minute: '2-digit', second: '2-digit', day: 'numeric', month: 'short'
@@ -125,11 +152,10 @@
             tick();
         }
 
-        // 2. Render List with Edit Icons
         function renderList() {
             const container = document.getElementById('vegContainer');
             container.innerHTML = vegetables.map((v, i) => `
-                <div class="group relative bg-white border border-slate-200 p-4 rounded-xl text-center hover:shadow-lg transition cursor-pointer">
+                <div class="group relative bg-white border border-slate-200 p-4 rounded-xl text-center hover:shadow-lg transition cursor-pointer active:scale-95">
                     <button onclick="openModal(${i}); event.stopPropagation();" class="absolute top-1 right-1 p-2 text-slate-300 hover:text-blue-500 transition no-print">
                         <i class="fas fa-edit text-xs"></i>
                     </button>
@@ -142,7 +168,6 @@
             `).join('');
         }
 
-        // 3. Modal Controls (Add & Edit)
         function openModal(index = -1) {
             const modal = document.getElementById('itemModal');
             const title = document.getElementById('modalTitle');
@@ -176,7 +201,7 @@
             const price = parseFloat(document.getElementById('vPrice').value);
             const icon = document.getElementById('vIcon').value;
 
-            if(!name || isNaN(price)) return alert("Data enter cheyyuka!");
+            if(!name || isNaN(price)) return alert("ദയവായി വിവരങ്ങൾ നൽകുക!");
 
             const newItem = { name, price, icon };
             if(index > -1) {
@@ -204,7 +229,6 @@
             }
         }
 
-        // 4. Billing Logic
         function addToCart(index) {
             const veg = vegetables[index];
             const qtyStr = prompt(`${veg.name} - എത്ര കിലോ (Kg)?`, "1");
@@ -229,7 +253,7 @@
             }
 
             list.innerHTML = cart.map((item, i) => `
-                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border-r-4 border-green-500 group">
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border-r-4 border-green-500 animate-in fade-in slide-in-from-right-4 duration-300">
                     <div class="flex-1">
                         <div class="font-bold text-slate-800 text-sm">${item.name}</div>
                         <div class="text-[10px] text-slate-400 uppercase font-bold">${item.qty}kg × ₹${item.price}</div>
