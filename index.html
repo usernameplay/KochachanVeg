@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Vegetable Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Manjari', sans-serif; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <header class="bg-green-800 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <button onclick="openModal()" class="bg-white text-green-800 px-5 py-2 rounded-full font-bold shadow hover:bg-green-100 no-print">
+                <i class="fas fa-plus mr-1"></i> Add Item
+            </button>
+
+            <h1 class="text-2xl md:text-3xl font-black tracking-tighter text-center flex-1">VEGETABLE SHOP</h1>
+
+            <div class="text-right leading-tight">
+                <div id="liveClock" class="font-bold text-sm md:text-base"></div>
+                <div id="lastUpdate" class="text-[10px] opacity-75 italic text-yellow-300">Last Update: --</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-2 space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 no-print">
+                <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="പച്ചക്കറി തിരയുക (Search)..." 
+                    class="w-full p-3 border-2 border-slate-100 rounded-lg outline-none focus:border-green-500 transition">
+            </div>
+
+            <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white p-6 rounded-2xl shadow-xl border border-green-100 sticky top-24">
+                <h3 class="text-lg font-bold mb-4 border-b pb-2 flex justify-between items-center text-slate-700">
+                    <span>🛒 കറന്റ് ബില്ല്</span>
+                    <span class="text-xs font-normal text-slate-400">Items: <span id="itemCount">0</span></span>
+                </h3>
+                
+                <div id="cartList" class="space-y-3 mb-6 max-h-80 overflow-y-auto min-h-[100px]">
+                    <p class="text-slate-400 text-center py-10 text-sm">ബില്ലിൽ ഐറ്റങ്ങൾ ഒന്നുമില്ല</p>
+                </div>
+
+                <div class="border-t-2 border-dashed pt-4 space-y-3 text-slate-800">
+                    <div class="flex justify-between text-2xl font-black text-green-700">
+                        <span>Grand Total:</span>
+                        <span>₹<span id="grandTotal">0</span></span>
+                    </div>
+                    <button onclick="window.print()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-green-700 no-bag transition">
+                        <i class="fas fa-print mr-2"></i> Total 
+                    </button>
+                    <button onclick="clearCart()" class="w-full py-2 text-red-500 text-sm font-medium no-print">Clear All</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="itemModal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[100] backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-sm mx-4">
+            <h2 id="modalTitle" class="text-xl font-bold mb-4 text-slate-800">Add New Item</h2>
+            <input type="hidden" id="editIndex">
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs text-slate-500 font-bold ml-1 uppercase">Item Name</label>
+                    <input type="text" id="vName" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-green-500" placeholder="eg: വെണ്ടയ്ക്ക">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-500 font-bold ml-1 uppercase">Price (₹)</label>
+                        <input type="number" id="vPrice" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-green-500" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500 font-bold ml-1 uppercase">Icon/Emoji</label>
+                        <input type="text" id="vIcon" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 ring-green-500" placeholder="🥬">
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button onclick="saveItem()" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 shadow-md">SAVE</button>
+                    <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200">CANCEL</button>
+                </div>
+                <button id="deleteBtn" onclick="deleteItem()" class="w-full text-red-500 text-xs font-bold uppercase tracking-widest hidden">Delete from List</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial Data with more vegetables
+        const defaultList = [
+            { name: 'തക്കാളി', price: 45, icon: '🍅' },
+            { name: 'സവാള', price: 60, icon: '🧅' },
+            { name: 'ഉരുളക്കിഴങ്ങ്', price: 38, icon: '🥔' },
+            { name: 'പച്ചമുളക്', price: 90, icon: '🌶️' },
+            { name: 'കാരറ്റ്', price: 75, icon: '🥕' },
+            { name: 'വെണ്ടയ്ക്ക', price: 40, icon: '🥒' },
+            { name: 'ഇഞ്ചി', price: 160, icon: '🫚' },
+            { name: 'വെളുത്തുള്ളി', price: 280, icon: '🧄' }
+        ];
+
+        let vegetables = JSON.parse(localStorage.getItem('vegInventory')) || defaultList;
+        let cart = [];
+
+        // 1. Clock & Updates
+        function tick() {
+            document.getElementById('liveClock').innerText = new Date().toLocaleString('ml-IN', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit', day: 'numeric', month: 'short'
+            });
+        }
+        setInterval(tick, 1000);
+
+        function init() {
+            renderList();
+            const lastTime = localStorage.getItem('lastUpdate');
+            if(lastTime) document.getElementById('lastUpdate').innerText = "Last Update: " + lastTime;
+            tick();
+        }
+
+        // 2. Render List with Edit Icons
+        function renderList() {
+            const container = document.getElementById('vegContainer');
+            container.innerHTML = vegetables.map((v, i) => `
+                <div class="group relative bg-white border border-slate-200 p-4 rounded-xl text-center hover:shadow-lg transition cursor-pointer">
+                    <button onclick="openModal(${i}); event.stopPropagation();" class="absolute top-1 right-1 p-2 text-slate-300 hover:text-blue-500 transition no-print">
+                        <i class="fas fa-edit text-xs"></i>
+                    </button>
+                    <div onclick="addToCart(${i})">
+                        <div class="text-4xl mb-2">${v.icon}</div>
+                        <div class="font-bold text-slate-700 text-sm truncate px-2">${v.name}</div>
+                        <div class="text-green-600 font-black text-lg">₹${v.price}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 3. Modal Controls (Add & Edit)
+        function openModal(index = -1) {
+            const modal = document.getElementById('itemModal');
+            const title = document.getElementById('modalTitle');
+            const delBtn = document.getElementById('deleteBtn');
+            
+            if(index > -1) {
+                title.innerText = "Edit Vegetable";
+                document.getElementById('editIndex').value = index;
+                document.getElementById('vName').value = vegetables[index].name;
+                document.getElementById('vPrice').value = vegetables[index].price;
+                document.getElementById('vIcon').value = vegetables[index].icon;
+                delBtn.classList.remove('hidden');
+            } else {
+                title.innerText = "Add New Vegetable";
+                document.getElementById('editIndex').value = -1;
+                document.getElementById('vName').value = "";
+                document.getElementById('vPrice').value = "";
+                document.getElementById('vIcon').value = "🥦";
+                delBtn.classList.add('hidden');
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').classList.add('hidden');
+        }
+
+        function saveItem() {
+            const index = parseInt(document.getElementById('editIndex').value);
+            const name = document.getElementById('vName').value;
+            const price = parseFloat(document.getElementById('vPrice').value);
+            const icon = document.getElementById('vIcon').value;
+
+            if(!name || isNaN(price)) return alert("Data enter cheyyuka!");
+
+            const newItem = { name, price, icon };
+            if(index > -1) {
+                vegetables[index] = newItem;
+            } else {
+                vegetables.push(newItem);
+            }
+
+            localStorage.setItem('vegInventory', JSON.stringify(vegetables));
+            const now = new Date().toLocaleString('ml-IN', {hour:'2-digit', minute:'2-digit'});
+            localStorage.setItem('lastUpdate', now);
+            document.getElementById('lastUpdate').innerText = "Last Update: " + now;
+            
+            renderList();
+            closeModal();
+        }
+
+        function deleteItem() {
+            const index = parseInt(document.getElementById('editIndex').value);
+            if(confirm("ഈ ഐറ്റം ഒഴിവാക്കണോ?")) {
+                vegetables.splice(index, 1);
+                localStorage.setItem('vegInventory', JSON.stringify(vegetables));
+                renderList();
+                closeModal();
+            }
+        }
+
+        // 4. Billing Logic
+        function addToCart(index) {
+            const veg = vegetables[index];
+            const qtyStr = prompt(`${veg.name} - എത്ര കിലോ (Kg)?`, "1");
+            if(qtyStr === null) return;
+            const qty = parseFloat(qtyStr);
+            
+            if(!isNaN(qty) && qty > 0) {
+                cart.push({ ...veg, qty, total: veg.price * qty });
+                updateCartUI();
+            }
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cartList');
+            const count = document.getElementById('itemCount');
+            count.innerText = cart.length;
+
+            if(cart.length === 0) {
+                list.innerHTML = `<p class="text-slate-400 text-center py-10 text-sm">ബില്ലിൽ ഐറ്റങ്ങൾ ഒന്നുമില്ല</p>`;
+                document.getElementById('grandTotal').innerText = "0";
+                return;
+            }
+
+            list.innerHTML = cart.map((item, i) => `
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border-r-4 border-green-500 group">
+                    <div class="flex-1">
+                        <div class="font-bold text-slate-800 text-sm">${item.name}</div>
+                        <div class="text-[10px] text-slate-400 uppercase font-bold">${item.qty}kg × ₹${item.price}</div>
+                    </div>
+                    <div class="text-right flex items-center gap-3">
+                        <span class="font-black text-green-700">₹${item.total.toFixed(2)}</span>
+                        <button onclick="removeFromCart(${i})" class="text-slate-300 hover:text-red-500 no-print transition">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            const grand = cart.reduce((s, c) => s + c.total, 0);
+            document.getElementById('grandTotal').innerText = grand.toFixed(2);
+        }
+
+        function removeFromCart(i) {
+            cart.splice(i, 1);
+            updateCartUI();
+        }
+
+        function clearCart() {
+            if(confirm("ബില്ല് ക്ലിയർ ചെയ്യണോ?")) {
+                cart = [];
+                updateCartUI();
+            }
+        }
+
+        function filterVeg() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.getElementById('vegContainer').children;
+            vegetables.forEach((v, i) => {
+                const match = v.name.toLowerCase().includes(q);
+                cards[i].style.display = match ? 'block' : 'none';
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
