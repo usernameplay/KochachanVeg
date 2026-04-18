@@ -5,62 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kochachan 🍅 Vegetable And Fruits 🍇</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Manjari', sans-serif; transition: background-color 0.4s ease, color 0.4s ease; overflow-x: hidden; }
-        
-        /* Glassmorphism Styles */
-        .glass-header {
-            background: rgba(22, 101, 52, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        .glass-bottom {
-            background: rgba(21, 128, 61, 0.9);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        
-        /* Dark Mode Aesthetics */
+        body { font-family: 'Manjari', sans-serif; transition: background-color 0.4s; overflow-x: hidden; }
+        .glass-header { background: rgba(22, 101, 52, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
         .dark-mode { background-color: #020617 !important; color: #f8fafc; }
-        .dark-mode .bg-white { background-color: rgba(30, 41, 59, 0.7) !important; color: #f8fafc !important; border-color: #334155; backdrop-filter: blur(8px); }
+        .dark-mode .bg-white { background-color: rgba(30, 41, 59, 0.8) !important; color: white !important; border-color: #334155; }
         .dark-mode .text-slate-800 { color: #f1f5f9 !important; }
+        .dark-mode #cartSidebar { background-color: #1e293b !important; color: white; }
         .dark-mode .bg-slate-50 { background-color: #0f172a !important; }
-        .dark-mode #cartSidebar { background-color: rgba(30, 41, 59, 0.95) !important; backdrop-filter: blur(16px); color: white; border-color: #334155; }
-        .dark-mode input { background-color: rgba(51, 65, 85, 0.6) !important; color: white !important; border-color: #475569 !important; backdrop-filter: blur(4px); }
-        .dark-mode .modal-btn-light { background-color: rgba(51, 65, 85, 0.8) !important; color: #f1f5f9 !important; }
-        .dark-mode .glass-header { background: rgba(2, 6, 23, 0.85); border-bottom: 1px solid #1e293b; }
-        .dark-mode .glass-bottom { background: rgba(2, 6, 23, 0.9); border-top: 1px solid #1e293b; }
-        .dark-mode #qtyModal > div { background-color: rgba(30, 41, 59, 0.9) !important; backdrop-filter: blur(16px); }
         
-        /* Smooth Card Hover */
-        .veg-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .veg-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
-        .veg-card:active { transform: scale(0.97); }
-
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         #cartSidebar { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .show-cart { transform: translateY(0) !important; }
-        @media print { .no-print { display: none !important; } }
+        #screenshotArea { background: white; padding: 20px; border-radius: 20px; }
+        .dark-mode #screenshotArea { background: #1e293b; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-24" id="mainBody">
 
-    <header class="glass-header text-white p-4 shadow-lg sticky top-0 z-50 no-print transition-all">
+    <header class="glass-header text-white p-4 shadow-lg sticky top-0 z-50 no-print">
         <div class="max-w-7xl mx-auto flex justify-between items-center px-2">
-            <div class="w-10"></div> <div class="text-center">
-                <h1 class="text-xl font-black tracking-tight leading-none uppercase drop-shadow-md">Kochachan 🥕 Veg & Fruits 🍎</h1>
-                <div id="liveTime" class="text-[11px] font-bold opacity-90 mt-1 uppercase tracking-wide"></div>
+            <div class="w-10"></div>
+            <div class="text-center">
+                <h1 class="text-xl font-black tracking-tight leading-none uppercase">Kochachan 🥕 Veg & Fruits 🍎</h1>
+                <div id="liveTime" class="text-[11px] font-bold opacity-90 mt-1 uppercase"></div>
             </div>
-            <button onclick="toggleDarkMode()" class="bg-white/20 h-10 w-10 rounded-xl flex items-center justify-center hover:bg-white/30 transition backdrop-blur-sm shadow-sm">
+            <button onclick="toggleDarkMode()" class="bg-white/20 h-10 w-10 rounded-xl flex items-center justify-center backdrop-blur-sm shadow-sm">
                 <i class="fas fa-moon"></i>
             </button>
         </div>
     </header>
 
-    <div class="bg-yellow-400 overflow-hidden py-1.5 shadow-inner no-print transition-colors">
+    <div class="bg-yellow-400 overflow-hidden py-1.5 shadow-inner no-print">
         <div class="animate-marquee">
             <span class="text-yellow-900 font-black text-sm uppercase tracking-wide">
                 🌼 Happy Vishu 🌼 | ഏവർക്കും ഐശ്വര്യപൂർണ്ണമായ വിഷു ആശംസകൾ! 🥬🍅 | UPDATING | TEST RUN 🙇
@@ -69,115 +49,105 @@
     </div>
 
     <main class="max-w-7xl mx-auto p-4 mt-2">
-        <div class="mb-6 no-print relative group">
-            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-green-500 transition-colors"></i>
+        <div class="mb-6 no-print relative">
+            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക (Search)..." 
-                class="w-full pl-14 p-4 rounded-2xl border border-slate-200 outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/20 font-bold text-slate-800 shadow-sm transition-all bg-white/80 backdrop-blur-sm">
+                class="w-full pl-14 p-4 rounded-2xl border border-slate-200 outline-none focus:border-green-500 font-bold text-slate-800 shadow-sm bg-white/80">
         </div>
-        
         <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
     </main>
 
-    <div class="glass-bottom fixed bottom-0 left-0 right-0 text-white p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.15)] z-[60] no-print flex justify-between items-center cursor-pointer transition-all" onclick="toggleCart()">
+    <div class="fixed bottom-0 left-0 right-0 bg-green-700 text-white p-4 shadow-lg z-[60] no-print flex justify-between items-center cursor-pointer" onclick="toggleCart()">
         <div class="flex items-center gap-4">
-            <div class="bg-white/20 p-3 rounded-2xl backdrop-blur-md shadow-inner"><i class="fas fa-shopping-basket text-lg"></i></div>
+            <div class="bg-white/20 p-3 rounded-2xl"><i class="fas fa-shopping-basket"></i></div>
             <div>
-                <div class="font-black text-sm uppercase tracking-wider">Bill Details</div>
-                <div class="text-[12px] font-bold opacity-80 mt-0.5"><span id="itemCount">0</span> Items Added</div>
+                <div class="font-black text-sm uppercase">Bill Details</div>
+                <div class="text-[12px] font-bold opacity-80"><span id="itemCount">0</span> Items Added</div>
             </div>
         </div>
         <div class="text-right">
-            <div class="text-3xl font-black drop-shadow-md">₹<span id="grandTotal">0</span></div>
+            <div class="text-3xl font-black">₹<span id="grandTotal">0</span></div>
         </div>
     </div>
 
-    <div id="cartSidebar" class="fixed inset-x-0 bottom-0 bg-white/95 backdrop-blur-xl h-[85vh] rounded-t-[2.5rem] z-[70] transform translate-y-full flex flex-col no-print border-t border-slate-200 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+    <div id="cartSidebar" class="fixed inset-x-0 bottom-0 bg-white h-[85vh] rounded-t-[2.5rem] z-[70] transform translate-y-full flex flex-col no-print border-t shadow-2xl">
         <div class="w-16 h-1.5 bg-slate-300 rounded-full mx-auto mt-4 mb-2"></div>
-        <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center">
+        <div class="px-8 py-5 border-b flex justify-between items-center">
             <span class="font-black text-2xl text-slate-800">Your Cart</span>
-            <button onclick="toggleCart()" class="text-slate-400 hover:text-red-500 transition-colors text-3xl"><i class="fas fa-times-circle"></i></button>
+            <div class="flex gap-4 items-center">
+                <button onclick="takeScreenshot()" class="bg-blue-100 text-blue-600 p-3 rounded-xl hover:bg-blue-200 transition">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <button onclick="toggleCart()" class="text-slate-400 text-3xl"><i class="fas fa-times-circle"></i></button>
+            </div>
         </div>
-        <div id="cartList" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
-        <div class="p-6 bg-slate-50/80 backdrop-blur-md space-y-4 rounded-t-3xl border-t border-slate-100">
-            <div class="flex justify-between items-center mb-2 px-2">
-                <span class="font-black text-slate-500 uppercase tracking-widest text-xs">Total Amount:</span>
+
+        <div id="screenshotArea" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <div id="cartList" class="space-y-4"></div>
+            <div id="screenshotFooter" class="hidden mt-6 pt-4 border-t-2 border-dashed border-slate-200 text-center">
+                <p class="font-black text-green-700 uppercase">Kochachan Vegetable And Fruits</p>
+                <p id="screenshotTime" class="text-[10px] text-slate-400 font-bold"></p>
+            </div>
+        </div>
+
+        <div class="p-6 bg-slate-50 space-y-4 rounded-t-3xl border-t">
+            <div class="flex justify-between items-center px-2">
+                <span class="font-black text-slate-500 uppercase text-xs">Total Amount:</span>
                 <span class="font-black text-3xl text-green-700">₹<span id="sideTotal">0</span></span>
             </div>
-            <button onclick="sendWhatsAppOrder()" class="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white py-4 rounded-2xl font-black shadow-lg shadow-green-500/30 uppercase flex items-center justify-center gap-3 transition-all transform active:scale-95">
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black shadow-lg uppercase flex items-center justify-center gap-3">
                 <i class="fab fa-whatsapp text-2xl"></i> Order Via WhatsApp
             </button>
-            <button onclick="clearCart()" class="w-full py-2 text-red-400 hover:text-red-600 font-black text-xs uppercase tracking-wider transition-colors">Clear All Items</button>
+            <button onclick="clearCart()" class="w-full py-1 text-red-400 font-black text-xs uppercase tracking-wider">Clear All</button>
         </div>
     </div>
 
-    <div id="qtyModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[110] backdrop-blur-md p-4 transition-opacity">
-        <div class="bg-white/95 p-8 rounded-[2rem] w-full max-w-xs shadow-2xl border border-white/20 text-center transform transition-transform">
-            <div id="qtyIcon" class="text-6xl mb-4 drop-shadow-lg"></div>
-            <h3 id="qtyTitle" class="text-2xl font-black text-slate-800 uppercase tracking-wide"></h3>
+    <div id="qtyModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[110] backdrop-blur-md p-4">
+        <div class="bg-white p-8 rounded-[2rem] w-full max-w-xs shadow-2xl text-center">
+            <div id="qtyIcon" class="text-6xl mb-4"></div>
+            <h3 id="qtyTitle" class="text-2xl font-black text-slate-800 uppercase"></h3>
             <p id="qtyTitleML" class="text-sm font-bold text-slate-400 mb-6"></p>
-            
-            <div class="relative mb-6">
-                <input type="number" id="qtyInput" class="w-full text-center text-4xl font-black p-4 bg-slate-100/80 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-green-500/20 transition-all text-slate-700" value="1" step="0.01">
-                <span class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold">KG</span>
-            </div>
-            
+            <input type="number" id="qtyInput" class="w-full text-center text-4xl font-black p-4 bg-slate-100 rounded-2xl mb-6 outline-none" value="1" step="0.01">
             <div class="grid grid-cols-4 gap-2 mb-8">
-                <button onclick="setQty(0.100)" class="modal-btn-light bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl text-[11px] font-black uppercase transition-colors">100g</button>
-                <button onclick="setQty(0.250)" class="modal-btn-light bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl text-[11px] font-black uppercase transition-colors">250g</button>
-                <button onclick="setQty(0.500)" class="modal-btn-light bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl text-[11px] font-black uppercase transition-colors">500g</button>
-                <button onclick="setQty(0.750)" class="modal-btn-light bg-slate-100 hover:bg-slate-200 text-slate-600 py-3 rounded-xl text-[11px] font-black uppercase transition-colors">750g</button>
+                <button onclick="setQty(0.100)" class="bg-slate-100 p-3 rounded-xl text-[10px] font-black uppercase">100g</button>
+                <button onclick="setQty(0.250)" class="bg-slate-100 p-3 rounded-xl text-[10px] font-black uppercase">250g</button>
+                <button onclick="setQty(0.500)" class="bg-slate-100 p-3 rounded-xl text-[10px] font-black uppercase">500g</button>
+                <button onclick="setQty(0.750)" class="bg-slate-100 p-3 rounded-xl text-[10px] font-black uppercase">750g</button>
             </div>
-            
             <div class="flex gap-3">
-                <button onclick="closeQtyModal()" class="flex-1 modal-btn-light bg-slate-100 hover:bg-slate-200 text-slate-500 py-4 rounded-2xl font-black uppercase tracking-wider transition-colors">Cancel</button>
-                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-4 rounded-2xl font-black uppercase tracking-wider shadow-lg shadow-green-500/20 transition-all">Add</button>
+                <button onclick="closeQtyModal()" class="flex-1 bg-slate-100 text-slate-500 py-4 rounded-2xl font-black uppercase">Back</button>
+                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-black uppercase">Add</button>
             </div>
         </div>
     </div>
 
     <script>
-        // API Removed. Direct Array Loading.
+        // പച്ചക്കറികളുടെ ഡാറ്റ ഇവിടെ മാറ്റാം
         const vegetables = [
-            {"id":1,"name":"Tomato","name_ml":"തക്കാളി","type":"vegetable","price":40,"image":"🍅","updated_at":"2026-04-18T10:00:00Z"},
-            {"id":2,"name":"Potato","name_ml":"ഉരുളക്കിഴങ്ങ്","type":"vegetable","price":22,"image":"🥔","updated_at":null},
-            {"id":3,"name":"Onion","name_ml":"സവാള","type":"vegetable","price":32,"image":"🧅","updated_at":null},
-            {"id":4,"name":"Carrot","name_ml":"കാരറ്റ്","type":"vegetable","price":50,"image":"🥕","updated_at":null},
-            {"id":5,"name":"Cabbage","name_ml":"കാബേജ്","type":"vegetable","price":25,"image":"🥬","updated_at":null},
-            {"id":6,"name":"Banana","name_ml":"വാഴപ്പഴം","type":"fruit","price":50,"image":"🍌","updated_at":null},
-            {"id":7,"name":"Mango","name_ml":"മാങ്ങ","type":"fruit","price":500,"image":"🥭","updated_at":null},
-            {"id":8,"name":"Brinjal","name_ml":"വഴുതന","type":"vegetable","price":45,"image":"🍆","updated_at":null},
-            {"id":10,"name":"Apple","name_ml":"ആപ്പിൾ","type":"fruit","price":180,"image":"🍎","updated_at":null},
-            {"id":11,"name":"Orange","name_ml":"ഓറഞ്ച്","type":"fruit","price":120,"image":"🍊","updated_at":null},
-            {"id":14,"name":"Watermelon","name_ml":"തണ്ണിമത്തൻ","type":"fruit","price":30,"image":"🍉","updated_at":null},
-            {"id":30,"name":"Garlic","name_ml":"വെളുത്തുള്ളി","type":"vegetable","price":120,"image":"🧄","updated_at":null},
-            {"id":31,"name":"Ginger","name_ml":"ഇഞ്ചി","type":"vegetable","price":100,"image":"🫚","updated_at":null}
-            // Add or modify items directly here.
+            {"id":1,"name":"Tomato","name_ml":"തക്കാളി","price":40,"image":"🍅","updated_at":"2026-04-18 10:30 AM"},
+            {"id":2,"name":"Potato","name_ml":"ഉരുളക്കിഴങ്ങ്","price":22,"image":"🥔","updated_at":"2026-04-17 09:15 AM"},
+            {"id":3,"name":"Onion","name_ml":"സവാള","price":32,"image":"🧅","updated_at":"2026-04-18 11:00 AM"},
+            {"id":4,"name":"Carrot","name_ml":"കാരറ്റ്","price":50,"image":"🥕","updated_at":""},
+            {"id":5,"name":"Cabbage","name_ml":"കാബേജ്","price":25,"image":"🥬","updated_at":""}
         ];
         
         let cart = [];
         let selectedVeg = null;
 
-        function initApp() {
-            renderList();
-            updateCartUI();
-        }
-
         function renderList() {
             const container = document.getElementById('vegContainer');
-            container.innerHTML = vegetables.map((v, i) => {
-                const timeString = v.updated_at ? new Date(v.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Recently';
-                return `
-                <div class="veg-card bg-white border border-slate-100 p-5 rounded-[1.5rem] text-center shadow-sm cursor-pointer flex flex-col justify-between" onclick="openQtyModal(${i})">
+            container.innerHTML = vegetables.map((v, i) => `
+                <div class="bg-white p-5 rounded-[1.5rem] text-center shadow-sm cursor-pointer flex flex-col justify-between" onclick="openQtyModal(${i})">
                     <div>
-                        <div class="text-5xl mb-3 drop-shadow-sm">${v.image || '🥦'}</div>
-                        <div class="font-black text-slate-800 text-sm truncate uppercase tracking-tight">${v.name_ml || v.name}</div>
+                        <div class="text-5xl mb-3">${v.image}</div>
+                        <div class="font-black text-slate-800 text-sm truncate uppercase">${v.name_ml || v.name}</div>
                         <div class="text-green-600 font-black text-xl mt-1">₹${v.price}</div>
                     </div>
-                    <div class="mt-4 pt-3 border-t border-slate-50 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                        Updated: ${timeString}
+                    <div class="mt-4 pt-3 border-t border-slate-50 text-[9px] text-slate-400 font-bold uppercase">
+                        ${v.updated_at ? 'Updated: ' + v.updated_at : ''}
                     </div>
                 </div>
-            `}).join('');
+            `).join('');
         }
 
         function updateCartUI() {
@@ -187,87 +157,84 @@
             document.getElementById('sideTotal').innerText = total.toFixed(2);
             const list = document.getElementById('cartList');
             if(cart.length === 0) {
-                list.innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-300"><i class="fas fa-shopping-cart text-5xl mb-4 opacity-50"></i><span class="font-bold uppercase text-sm tracking-widest">Cart is Empty</span></div>`;
+                list.innerHTML = `<div class="text-center py-20 text-slate-300 font-bold uppercase text-xs">Empty Cart</div>`;
                 return;
             }
             list.innerHTML = cart.map((item, i) => `
-                <div class="flex justify-between items-center bg-white border border-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex gap-4 items-center">
-                        <div class="w-1 h-10 bg-green-500 rounded-full"></div>
-                        <div>
-                            <div class="font-black text-slate-800 text-[15px] uppercase tracking-wide">${item.name}</div>
-                            <div class="text-[12px] font-bold text-slate-400 mt-0.5">${item.qty}kg x ₹${item.price}</div>
-                        </div>
+                <div class="flex justify-between items-center bg-white border border-slate-100 p-4 rounded-2xl shadow-sm">
+                    <div>
+                        <div class="font-black text-slate-800 text-[14px] uppercase">${item.name}</div>
+                        <div class="text-[11px] font-bold text-slate-400">${item.qty}kg x ₹${item.price}</div>
                     </div>
-                    <div class="flex items-center gap-5">
-                        <span class="font-black text-green-700 text-xl">₹${item.total.toFixed(2)}</span>
-                        <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-xl transition-all"><i class="fas fa-trash-alt"></i></button>
+                    <div class="flex items-center gap-4">
+                        <span class="font-black text-green-700 text-lg">₹${item.total.toFixed(2)}</span>
+                        <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-300 p-2 no-print"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function sendWhatsAppOrder() {
-            if(cart.length === 0) {
-                alert("Cart is empty!");
-                return;
-            }
-
-            let message = "🛒 *പുതിയ ഓർഡർ - Kochachan 🌶️ Veg & Fruits 🍉* 🛒\n";
-            message += "━━━━━━━━━━━━━━━━━━\n";
+        function takeScreenshot() {
+            if(cart.length === 0) return alert("Cart is empty!");
             
-            cart.forEach((item, index) => {
-                message += `${index + 1}. *${item.name}* 📦\n`;
-                message += `   ${item.qty}kg × ₹${item.price} = *₹${item.total.toFixed(2)}*\n`;
+            const area = document.getElementById('screenshotArea');
+            const footer = document.getElementById('screenshotFooter');
+            const timeSpan = document.getElementById('screenshotTime');
+            
+            // Show hidden details for screenshot
+            footer.classList.remove('hidden');
+            timeSpan.innerText = new Date().toLocaleString('en-IN');
+            
+            html2canvas(area, {
+                backgroundColor: document.body.classList.contains('dark-mode') ? '#1e293b' : '#ffffff',
+                scale: 2, // Higher quality
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Kochachan_Bill_${Date.now()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                
+                // Hide again after screenshot
+                footer.classList.add('hidden');
             });
+        }
 
-            const grandTotal = cart.reduce((s, c) => s + c.total, 0);
+        function sendWhatsAppOrder() {
+            if(cart.length === 0) return alert("Cart is empty!");
+            let message = "🛒 *പുതിയ ഓർഡർ - Kochachan Veg & Fruits* 🛒\n━━━━━━━━━━━━━━━━━━\n";
+            cart.forEach((item, index) => {
+                message += `${index + 1}. *${item.name}*\n   ${item.qty}kg × ₹${item.price} = *₹${item.total.toFixed(2)}*\n`;
+            });
             message += "━━━━━━━━━━━━━━━━━━\n";
-            message += `💰 *ആകെ തുക: ₹${grandTotal.toFixed(2)}*\n`;
-            message += "━━━━━━━━━━━━━━━━━━\n";
-            message += `📅 Date: ${new Date().toLocaleString('en-IN')}\n\n`;
-            message += "✅ *ഓർഡർ കൺഫേം ചെയ്യുക.*";
-
-            const encodedMsg = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/918589944310?text=${encodedMsg}`;
-            
-            window.open(whatsappUrl, '_blank');
+            message += `💰 *ആകെ തുക: ₹${document.getElementById('sideTotal').innerText}*\n━━━━━━━━━━━━━━━━━━\n`;
+            message += `📅 ${new Date().toLocaleString('en-IN')}`;
+            window.open(`https://wa.me/918589944310?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         function filterVeg() {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const container = document.getElementById('vegContainer');
-            const items = container.querySelectorAll('.veg-card');
+            const items = container.querySelectorAll('.bg-white');
             vegetables.forEach((v, i) => {
-                const name = (v.name || "").toLowerCase();
-                const nameML = (v.name_ml || "").toLowerCase();
-                const match = name.includes(q) || nameML.includes(q);
+                const match = v.name.toLowerCase().includes(q) || v.name_ml.toLowerCase().includes(q);
                 if(items[i]) items[i].style.display = match ? 'flex' : 'none';
             });
         }
 
         function toggleDarkMode() { document.getElementById('mainBody').classList.toggle('dark-mode'); }
         function toggleCart() { document.getElementById('cartSidebar').classList.toggle('show-cart'); }
-        
         function openQtyModal(i) {
             selectedVeg = vegetables[i];
             document.getElementById('qtyTitle').innerText = selectedVeg.name;
-            document.getElementById('qtyTitleML').innerText = selectedVeg.name_ml || "";
-            document.getElementById('qtyIcon').innerText = selectedVeg.image || '🥦';
+            document.getElementById('qtyTitleML').innerText = selectedVeg.name_ml;
+            document.getElementById('qtyIcon').innerText = selectedVeg.image;
             document.getElementById('qtyInput').value = 1;
-            
-            const modal = document.getElementById('qtyModal');
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('opacity-100'), 10);
+            document.getElementById('qtyModal').style.display = 'flex';
         }
-        
-        function closeQtyModal() { 
-            const modal = document.getElementById('qtyModal');
-            modal.style.display = 'none'; 
-        }
-        
+        function closeQtyModal() { document.getElementById('qtyModal').style.display = 'none'; }
         function setQty(v) { document.getElementById('qtyInput').value = v; }
-        
         function confirmAddToCart() {
             const q = parseFloat(document.getElementById('qtyInput').value);
             if(q > 0) {
@@ -275,21 +242,13 @@
                 updateCartUI(); closeQtyModal();
             }
         }
-        
-        function clearCart() { if(confirm("Clear entire bill?")) { cart = []; updateCartUI(); } }
+        function clearCart() { if(confirm("Clear bill?")) { cart = []; updateCartUI(); } }
 
-        // Updated Real-time clock with Seconds and Date
         setInterval(() => { 
-            const now = new Date();
-            const options = { 
-                year: 'numeric', month: 'short', day: 'numeric', 
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                hour12: true
-            };
-            document.getElementById('liveTime').innerText = now.toLocaleString('en-IN', options); 
+            document.getElementById('liveTime').innerText = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' }); 
         }, 1000);
 
-        initApp();
+        renderList();
     </script>
 </body>
 </html>
