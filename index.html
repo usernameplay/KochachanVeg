@@ -15,6 +15,9 @@
         .dark-mode .bg-slate-50 { background-color: #0f172a !important; }
         .dark-mode #cartSidebar { background-color: #1e293b !important; color: white; }
         .dark-mode input { background-color: #334155 !important; color: white !important; border-color: #475569 !important; }
+        /* New CSS rule to fix Modal Buttons in Dark Mode */
+        .dark-mode .modal-btn-light { background-color: #334155 !important; color: #f1f5f9 !important; }
+        
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
         #cartSidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -96,14 +99,17 @@
             <h3 id="qtyTitle" class="text-xl font-black text-slate-800 uppercase"></h3>
             <p id="qtyTitleML" class="text-sm font-bold text-slate-500 mb-4"></p>
             <input type="number" id="qtyInput" class="w-full text-center text-3xl font-black p-4 bg-slate-100 rounded-2xl mb-4 outline-none" value="1" step="0.01">
-            <div class="grid grid-cols-3 gap-2 mb-6">
-                <button onclick="setQty(0.100)" class="bg-slate-100 py-2 rounded-xl text-[10px] font-black uppercase">100g</button>
-                <button onclick="setQty(0.250)" class="bg-slate-100 py-2 rounded-xl text-[10px] font-black uppercase">250g</button>
-                <button onclick="setQty(0.500)" class="bg-slate-100 py-2 rounded-xl text-[10px] font-black uppercase">500g</button>
+            
+            <div class="grid grid-cols-4 gap-2 mb-6">
+                <button onclick="setQty(0.100)" class="modal-btn-light bg-slate-100 text-slate-700 py-2 rounded-xl text-[10px] font-black uppercase">100g</button>
+                <button onclick="setQty(0.250)" class="modal-btn-light bg-slate-100 text-slate-700 py-2 rounded-xl text-[10px] font-black uppercase">250g</button>
+                <button onclick="setQty(0.500)" class="modal-btn-light bg-slate-100 text-slate-700 py-2 rounded-xl text-[10px] font-black uppercase">500g</button>
+                <button onclick="setQty(0.750)" class="modal-btn-light bg-slate-100 text-slate-700 py-2 rounded-xl text-[10px] font-black uppercase">750g</button>
             </div>
+            
             <div class="flex gap-2">
                 <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-black">ADD</button>
-                <button onclick="closeQtyModal()" class="flex-1 bg-slate-200 text-slate-600 py-4 rounded-2xl font-black">BACK</button>
+                <button onclick="closeQtyModal()" class="flex-1 modal-btn-light bg-slate-200 text-slate-600 py-4 rounded-2xl font-black">BACK</button>
             </div>
         </div>
     </div>
