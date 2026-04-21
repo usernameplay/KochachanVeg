@@ -205,17 +205,38 @@
             `).join('');
         }
 
-        function takeScreenshot() {
+        async function takeScreenshot() {
             if(cart.length === 0) return alert("Add items to take screenshot!");
+            
             const area = document.getElementById('screenshotArea');
             const stamp = document.getElementById('ssTimestamp');
             stamp.innerText = "Customer Bill • " + new Date().toLocaleString('en-IN');
+
+            // Store original styles
+            const originalStyle = area.style.cssText;
+
+            // Expand area temporarily to capture all items
+            area.style.height = 'auto';
+            area.style.maxHeight = 'none';
+            area.style.overflow = 'visible';
             area.style.background = "#ffffff";
-            html2canvas(area, { scale: 4, backgroundColor: "#ffffff", useCORS: true }).then(canvas => {
+
+            // Small delay to ensure rendering
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            html2canvas(area, { 
+                scale: 3, 
+                backgroundColor: "#ffffff", 
+                useCORS: true,
+                scrollY: -window.scrollY // Fixes offset issues
+            }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `Customer_Bill_${Date.now()}.png`;
-                link.href = canvas.toDataURL();
+                link.href = canvas.toDataURL('image/png');
                 link.click();
+
+                // Restore original styles
+                area.style.cssText = originalStyle;
             });
         }
 
