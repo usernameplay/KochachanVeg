@@ -11,13 +11,17 @@
     <style>
         body { font-family: 'Manjari', sans-serif; transition: 0.3s; overflow-x: hidden; }
         
+        /* Dark Mode Handling */
         .dark-mode { background-color: #0f172a !important; color: #f8fafc; }
         .dark-mode .bg-card { background-color: #1e293b !important; border-color: #334155 !important; }
         .dark-mode .text-main { color: #f1f5f9 !important; }
         .dark-mode .text-sub { color: #94a3b8 !important; }
+        
+        /* Quantity Button Fix in Dark Mode */
         .dark-mode .qty-btn { background-color: #334155 !important; color: #ffffff !important; border: 1px solid #475569 !important; }
-        .dark-mode input#qtyInput { background-color: #1e293b !important; color: #22c55e !important; border: 2px solid #475569; }
+        .dark-mode input#qtyInput { background-color: #1e293b !important; color: #ffffff !important; border: 2px solid #475569; }
 
+        /* Light Mode Styling */
         .bg-card { background-color: #ffffff; border: 1px solid #e2e8f0; }
         .text-main { color: #1e293b; }
         .text-sub { color: #64748b; }
@@ -32,20 +36,40 @@
         #cartSidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .show-cart { transform: translateY(0) !important; }
         
-        .item-emoji { font-size: 42px; }
+        .item-emoji { font-size: 45px; }
+        .item-img { width: 55px; height: 55px; object-fit: contain; margin: 0 auto; }
+        
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-24" id="mainBody">
 
-    <div id="screenshotArea" class="bg-inherit">
-        <header class="bg-green-800 text-white p-5 shadow-lg flex flex-col items-center">
-            <h1 class="text-xl font-black tracking-tight uppercase text-center">Kochachan 🥕 Veg & Fruits 🍎</h1>
-            <div id="billDateTime" class="text-[10px] font-bold opacity-80 mt-1 uppercase"></div>
-        </header>
+    <header class="bg-green-800 text-white p-5 shadow-lg z-50 sticky top-0 no-print flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <h1 class="text-xl font-black tracking-tight uppercase">Kochachan 🥕</h1>
+        </div>
+        <div id="billDateTime" class="text-[10px] font-bold opacity-70 uppercase hidden sm:block"></div>
+        <div class="flex gap-2">
+            <button onclick="toggleDarkMode()" class="bg-white/10 h-10 w-10 rounded-full flex items-center justify-center">
+                <i class="fas fa-adjust text-xs"></i>
+            </button>
+            <button onclick="takeScreenshot()" class="bg-white/20 h-10 w-10 rounded-full flex items-center justify-center">
+                <i class="fas fa-camera text-xs"></i>
+            </button>
+        </div>
+    </header>
 
-        <main class="max-w-7xl mx-auto p-4">
-            <div class="mb-5 no-print relative">
+    <div class="bg-yellow-400 py-1 text-center no-print border-b border-yellow-500 shadow-inner">
+        <div class="overflow-hidden">
+            <div class="animate-marquee text-green-900 font-bold text-xs uppercase tracking-wide">
+                🌼 Happy Vishu 🌼 | ഏവർക്കും ഐശ്വര്യപൂർണ്ണമായ വിഷു ആശംസകൾ! 🥬🍅🥕🧅🥔
+            </div>
+        </div>
+    </div>
+
+    <div id="contentArea">
+        <main class="max-w-7xl mx-auto p-4 no-print">
+            <div class="mb-5 relative">
                 <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക (Search)..." 
                     class="w-full pl-12 p-4 rounded-2xl border-2 border-slate-200 outline-none focus:border-green-500 font-bold text-slate-800 shadow-sm transition">
@@ -56,11 +80,19 @@
             </div>
         </main>
 
-        <div id="billPrintArea" class="hidden p-6 bg-white text-slate-800">
-            <div id="cartListBill" class="space-y-4"></div>
-            <div class="mt-8 p-6 bg-green-50 rounded-3xl border-2 border-green-200 text-center">
-                <div class="text-slate-500 font-bold text-xs uppercase mb-1">Grand Total</div>
-                <div class="text-3xl font-black text-green-700">₹<span id="billTotal">0</span> 😊</div>
+        <div id="billScreenshotArea" class="hidden bg-inherit">
+            <header class="bg-green-800 text-white p-6 shadow-lg flex flex-col items-center">
+                <h1 class="text-2xl font-black tracking-tight uppercase text-center">Kochachan 🥕 Veg & Fruits 🍎</h1>
+                <div id="screenshotDateTime" class="text-[10px] font-bold opacity-80 mt-2 uppercase"></div>
+            </header>
+            <div class="p-6 bg-inherit text-slate-800">
+                <div id="cartListBill" class="space-y-4"></div>
+                
+                <div class="mt-8 p-6 bg-green-50 rounded-3xl border-2 border-green-200 text-center">
+                    <div class="text-slate-500 font-bold text-xs uppercase mb-2 tracking-widest">Grand Total</div>
+                    <div class="text-4xl font-black text-green-700">₹<span id="billTotal">0</span> 😊</div>
+                    <div class="text-[9px] text-slate-400 mt-5 uppercase font-bold tracking-widest">Order Success! Thank You.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -75,17 +107,34 @@
         </button>
     </div>
 
+    <div id="cartSidebar" class="fixed inset-x-0 bottom-0 bg-white h-[85vh] rounded-t-[2rem] z-[70] transform translate-y-full flex flex-col no-print border-t shadow-2xl">
+        <div class="w-12 h-1 bg-slate-300 rounded-full mx-auto mt-3"></div>
+        <div class="px-6 py-5 border-b flex justify-between items-center">
+            <span class="font-black text-lg text-slate-800 uppercase tracking-tight">Your Order Info</span>
+            <button onclick="toggleCart()" class="text-slate-300 text-3xl hover:text-red-400"><i class="fas fa-times-circle"></i></button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 bg-slate-50" id="cartList"></div>
+
+        <div class="p-6 space-y-3 bg-white border-t">
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-black shadow-lg uppercase flex items-center justify-center gap-2 active:scale-95 transition">
+                <i class="fab fa-whatsapp text-lg"></i> WhatsApp Order
+            </button>
+            <button onclick="clearCart()" class="w-full py-1 text-red-400 font-bold text-[10px] uppercase">Reset List</button>
+        </div>
+    </div>
+
     <div id="qtyModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
         <div class="bg-card p-8 rounded-[2.5rem] w-full max-w-xs shadow-2xl text-center border">
             <div id="qtyImgContainer" class="mb-2"></div>
-            <h3 id="qtyTitle" class="text-xl font-black text-main uppercase"></h3>
-            <p id="qtyTitleML" class="text-sm font-bold text-sub mb-5"></p>
+            <h3 id="qtyTitle" class="text-2xl font-black text-main uppercase"></h3>
+            <p id="qtyTitleML" class="text-sm font-bold text-sub mb-6"></p>
             <input type="number" id="qtyInput" class="w-full text-center text-4xl font-black p-5 rounded-2xl outline-none border-2 border-slate-100 mb-4" value="1" step="0.01">
             <div class="grid grid-cols-4 gap-2 mb-8">
-                <button onclick="setQty(0.1)" class="qty-btn p-2.5 rounded-xl text-[10px] font-bold">100g</button>
-                <button onclick="setQty(0.25)" class="qty-btn p-2.5 rounded-xl text-[10px] font-bold">250g</button>
-                <button onclick="setQty(0.5)" class="qty-btn p-2.5 rounded-xl text-[10px] font-bold">500g</button>
-                <button onclick="setQty(1)" class="qty-btn p-2.5 rounded-xl text-[10px] font-bold">1kg</button>
+                <button onclick="setQty(0.1)" class="qty-btn p-3 rounded-xl text-[10px] font-bold">100g</button>
+                <button onclick="setQty(0.25)" class="qty-btn p-3 rounded-xl text-[10px] font-bold">250g</button>
+                <button onclick="setQty(0.5)" class="qty-btn p-3 rounded-xl text-[10px] font-bold">500g</button>
+                <button onclick="setQty(1)" class="qty-btn p-3 rounded-xl text-[10px] font-bold">1kg</button>
             </div>
             <div class="flex gap-3">
                 <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-xl font-bold">ADD</button>
@@ -94,24 +143,10 @@
         </div>
     </div>
 
-    <div id="cartSidebar" class="fixed inset-x-0 bottom-0 bg-white h-[85vh] rounded-t-[2rem] z-[70] transform translate-y-full flex flex-col no-print border-t shadow-2xl">
-        <div class="w-12 h-1 bg-slate-300 rounded-full mx-auto mt-3"></div>
-        <div class="px-6 py-5 border-b flex justify-between items-center">
-            <span class="font-black text-lg text-slate-800">BILL INFO</span>
-            <button onclick="toggleCart()" class="text-slate-300 text-3xl"><i class="fas fa-times-circle"></i></button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-4 bg-slate-50" id="cartList"></div>
-        <div class="p-6 space-y-3 bg-white border-t">
-            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-black shadow-lg flex items-center justify-center gap-2">
-                <i class="fab fa-whatsapp text-lg"></i> WHATSAPP ORDER
-            </button>
-            <button onclick="takeScreenshot()" class="w-full py-2 text-blue-500 font-bold text-xs uppercase">Save Screenshot</button>
-        </div>
-    </div>
-
     <script>
-        // പകരമായി നേരിട്ടുള്ള fetch പരീക്ഷിക്കുക, പരാജയപ്പെട്ടാൽ proxy ഉപയോഗിക്കും
-        const apiURL = "https://price-update-pi.vercel.app/api/veg";
+        const originalAPI = "https://price-update-pi.vercel.app/api/veg";
+        // AllOrigins proxy handles CORS issues
+        const proxyURL = "https://api.allorigins.win/get?url=" + encodeURIComponent(originalAPI) + "&timestamp=" + Date.now();
 
         let vegetables = [];
         let cart = [];
@@ -119,38 +154,36 @@
 
         async function loadVegetables() {
             try {
-                // പ്രോക്സി ഇല്ലാതെ ആദ്യം ശ്രമിക്കുന്നു
-                const response = await fetch(apiURL);
-                if (!response.ok) throw new Error('Direct load failed');
-                vegetables = await response.json();
-                renderList();
+                const response = await fetch(proxyURL);
+                const result = await response.json();
+                const data = JSON.parse(result.contents);
+                if(Array.isArray(data)) { vegetables = data; renderList(); }
             } catch (e) {
-                console.log("Direct fetch blocked by CORS, trying proxy...");
-                try {
-                    const proxyResponse = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(apiURL)}&timestamp=${Date.now()}`);
-                    const result = await proxyResponse.json();
-                    vegetables = JSON.parse(result.contents);
-                    renderList();
-                } catch (proxyError) {
-                    document.getElementById('vegContainer').innerHTML = `<div class="col-span-full text-center py-20 text-red-500 font-bold">API Load Error! Please check link.</div>`;
-                }
+                document.getElementById('vegContainer').innerHTML = `<div class="col-span-full text-center py-20 text-red-500 font-bold">Loading Error! Check Connection.</div>`;
             }
         }
 
+        function getItemDisplay(v) {
+            // API-യിൽ ഇമേജ് ഉണ്ടെങ്കിൽ അത് കാണിക്കും, ഇല്ലെങ്കിൽ ഇമോജി കാണിക്കും
+            if (v.image && v.image.startsWith('http')) {
+                return `<img src="${v.image}" class="item-img" onerror="this.src='${fallbackImg}'">`;
+            }
+            return `<div class="item-emoji">${v.emoji || '🥗'}</div>`;
+        }
+        const fallbackImg = 'https://cdn-icons-png.flaticon.com/512/1147/1147814.png';
+
         function renderList() {
             const container = document.getElementById('vegContainer');
-            if(!vegetables || vegetables.length === 0) return;
-            
             container.innerHTML = vegetables.map((v, i) => `
                 <div class="bg-card p-4 rounded-2xl text-center shadow-sm cursor-pointer flex flex-col justify-between transition-all active:scale-95 border" onclick="openQtyModal(${i})">
                     <div>
-                        <div class="item-emoji">${v.emoji || '🥗'}</div>
-                        <div class="font-bold text-main text-[14px] uppercase mt-1 leading-tight">${v.name_ml || v.name_en}</div>
-                        <div class="text-green-600 font-black text-xl mt-1">₹${v.price}</div>
-                        <div class="text-[9px] text-sub font-bold uppercase">${v.unit || '1 kg'}</div>
+                        ${getItemDisplay(v)}
+                        <div class="font-bold text-main text-[13px] uppercase mt-2 leading-tight">${v.name_ml || v.name_en}</div>
+                        <div class="text-green-600 font-black text-lg mt-1">₹${v.price}</div>
+                        <div class="text-[9px] text-sub font-bold uppercase tracking-widest">${v.unit || '1 kg'}</div>
                     </div>
                     <div class="mt-2 pt-2 border-t border-slate-50 dark:border-slate-800">
-                        <div class="text-[8px] text-sub font-bold uppercase"><i class="far fa-clock mr-1"></i>${v.last_updated || 'Updated'}</div>
+                        <div class="text-[8px] text-sub font-bold uppercase"><i class="far fa-clock mr-1"></i>${v.last_updated || 'Updated Just Now'}</div>
                     </div>
                 </div>
             `).join('');
@@ -160,14 +193,67 @@
             const total = cart.reduce((s, c) => s + c.total, 0);
             document.getElementById('grandTotal').innerText = total.toFixed(2);
             document.getElementById('billTotal').innerText = total.toFixed(2);
+            
             const list = document.getElementById('cartList');
-            if(cart.length === 0) { list.innerHTML = `<p class="text-center text-slate-300 py-10">Empty</p>`; return; }
-            list.innerHTML = cart.map((item, i) => `
-                <div class="flex justify-between items-center bg-white p-4 rounded-xl mb-2 shadow-sm border border-slate-100">
-                    <div><div class="font-bold text-slate-800">${item.name}</div><div class="text-xs text-slate-400">${item.qty}kg x ₹${item.price}</div></div>
-                    <div class="font-black text-green-700">₹${item.total.toFixed(2)}</div>
+            const listBill = document.getElementById('cartListBill');
+
+            if(cart.length === 0) {
+                list.innerHTML = `<div class="text-center py-10 text-slate-300 font-bold text-[10px]">Your list is empty.</div>`;
+                listBill.innerHTML = "";
+                return;
+            }
+
+            // Generate HTML for cart list and bill screenshot
+            const itemsHTML = cart.map((item, i) => `
+                <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                    <div>
+                        <div class="font-bold text-slate-800 uppercase text-[15px] tracking-tight">${item.name}</div>
+                        <div class="text-[11px] font-bold text-slate-400">${item.qty}kg x ₹${item.price}</div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-green-700 text-[18px]">₹${item.total.toFixed(2)}</span>
+                        <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-200 no-print hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                    </div>
                 </div>
             `).join('');
+            
+            list.innerHTML = itemsHTML;
+            listBill.innerHTML = itemsHTML; // Shows added items in screenshot area
+        }
+
+        async function takeScreenshot() {
+            if(cart.length === 0) return alert("Add items first!");
+            const ssArea = document.getElementById('billScreenshotArea');
+            const mainBody = document.getElementById('mainBody');
+            
+            // Set timestamp
+            const now = new Date();
+            document.getElementById('screenshotDateTime').innerText = "Kochachan Receipt • " + now.toLocaleString('en-IN');
+            
+            // Show only the bill screenshot area, hide others
+            ssArea.classList.remove('hidden');
+            document.querySelector('main').classList.add('no-print');
+            document.querySelector('.no-print.bg-yellow-400').classList.add('no-print-area');
+            
+            const canvas = await html2canvas(ssArea, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+            const link = document.createElement('a');
+            link.download = `Kochachan_Receipt_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+
+            // Reset UI after screenshot
+            ssArea.classList.add('hidden');
+            document.querySelector('main').classList.remove('no-print');
+            document.querySelector('.no-print.bg-yellow-400').classList.remove('no-print-area');
+        }
+
+        function sendWhatsAppOrder() {
+            if(cart.length === 0) return alert("Add items first!");
+            const now = new Date();
+            let msg = "🛒 *പുതിയ ഓർഡർ - Kochachan* 🛒\n━━━━━━━━━━━━━━━━━━\n";
+            cart.forEach((it, idx) => msg += `${idx + 1}. *${it.name}* (${it.qty}kg) - ₹${it.total.toFixed(2)}\n`);
+            msg += `━━━━━━━━━━━━━━━━━━\n💰 *Total Amount: ₹${document.getElementById('grandTotal').innerText}*`;
+            window.open(`https://wa.me/918589944310?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function toggleDarkMode() { document.getElementById('mainBody').classList.toggle('dark-mode'); }
@@ -176,7 +262,8 @@
             selectedVeg = vegetables[i];
             document.getElementById('qtyTitle').innerText = selectedVeg.name_en;
             document.getElementById('qtyTitleML').innerText = selectedVeg.name_ml;
-            document.getElementById('qtyImgContainer').innerText = selectedVeg.emoji || '🥗';
+            document.getElementById('qtyImgContainer').innerHTML = getItemDisplay(selectedVeg);
+            document.getElementById('qtyInput').value = 1;
             document.getElementById('qtyModal').style.display = 'flex';
         }
         function closeQtyModal() { document.getElementById('qtyModal').style.display = 'none'; }
@@ -193,28 +280,20 @@
         }
         function filterVeg() {
             const q = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.bg-card');
+            const cards = document.querySelectorAll('#vegContainer > div');
             vegetables.forEach((v, i) => {
-                const txt = (v.name_en + v.name_ml + (v.name_manglish || "")).toLowerCase();
-                cards[i].style.display = txt.includes(q) ? 'flex' : 'none';
+                const searchTxt = (v.name_en + v.name_ml + (v.name_manglish || "")).toLowerCase();
+                cards[i].style.display = searchTxt.includes(q) ? 'flex' : 'none';
             });
         }
-        function sendWhatsAppOrder() {
-            let msg = "🛒 *പുതിയ ഓർഡർ - Kochachan* 🛒\n";
-            cart.forEach((it, idx) => msg += `${idx + 1}. *${it.name}* (${it.qty}kg) - ₹${it.total.toFixed(2)}\n`);
-            msg += `\n💰 *Total: ₹${document.getElementById('grandTotal').innerText}*`;
-            window.open(`https://wa.me/918589944310?text=${encodeURIComponent(msg)}`);
-        }
-        async function takeScreenshot() {
-            const canvas = await html2canvas(document.getElementById('screenshotArea'));
-            const link = document.createElement('a');
-            link.download = 'bill.png'; link.href = canvas.toDataURL(); link.click();
-        }
+        function clearCart() { if(confirm("Reset the list?")) { cart = []; updateCartUI(); } }
+
         setInterval(() => { 
-            document.getElementById('billDateTime').innerText = new Date().toLocaleString('en-IN'); 
+            const now = new Date();
+            document.getElementById('billDateTime').innerText = now.toLocaleString('en-IN'); 
         }, 1000);
+
         loadVegetables();
     </script>
 </body>
-    </html>
-    
+</html>
