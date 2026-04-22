@@ -19,7 +19,8 @@
         #cartSidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .show-cart { transform: translateY(0) !important; }
         
-        .item-img { width: 50px; height: 50px; object-fit: contain; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .item-emoji { font-size: 40px; margin-bottom: 8px; display: block; }
+        .item-img { width: 50px; height: 50px; object-fit: contain; margin: 0 auto 8px; }
         
         @media print { .no-print { display: none !important; } }
     </style>
@@ -30,7 +31,7 @@
         <div class="max-w-7xl mx-auto flex justify-between items-center px-2">
             <div class="w-10"></div> 
             <div class="text-center">
-                <h1 class="text-xl font-black tracking-tight leading-none uppercase">Kochachan 🥕 Veg & Fruits 🍎</h1>
+                <h1 class="text-xl font-black tracking-tight leading-none uppercase">Kochachan Veg & Fruits 🍎</h1>
                 <div id="liveTime" class="text-[10px] font-bold opacity-90 mt-1 uppercase"></div>
             </div>
             <button onclick="toggleDarkMode()" class="bg-green-700 h-10 w-10 rounded-lg flex items-center justify-center hover:bg-green-600 transition">
@@ -42,7 +43,7 @@
     <div class="bg-yellow-400 overflow-hidden py-1 border-b border-yellow-500 shadow-inner no-print">
         <div class="animate-marquee">
             <span class="text-green-900 font-black text-sm uppercase tracking-wide">
-                🌼 Happy Vishu 🌼 | ഏവർക്കും ഐശ്വര്യപൂർണ്ണമായ വിഷു ആശംസകൾ! 🥬🍅🥕🧅🥔 | UPDATING | TEST RUN 🙇
+                UPDATING | TEST RUN 🙇
             </span>
         </div>
     </div>
@@ -53,7 +54,9 @@
             <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക (Search)..." 
                 class="w-full pl-12 p-3.5 rounded-2xl border-2 border-slate-200 outline-none focus:border-green-500 font-bold text-slate-800 shadow-sm transition">
         </div>
-        <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
+        <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <div class="col-span-full text-center py-20 font-bold text-slate-400">Loading Items...</div>
+        </div>
     </main>
 
     <div class="fixed bottom-0 left-0 right-0 bg-green-700 text-white p-4 shadow-[0_-4px_15px_rgba(0,0,0,0.2)] z-[60] no-print flex justify-between items-center cursor-pointer" onclick="toggleCart()">
@@ -102,7 +105,7 @@
 
     <div id="qtyModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
         <div class="bg-white p-6 rounded-3xl w-full max-w-xs shadow-2xl text-center">
-            <div id="qtyImgContainer" class="mb-3"></div>
+            <div id="qtyImgContainer" class="mb-3 text-5xl"></div>
             <h3 id="qtyTitle" class="text-xl font-black text-slate-800 uppercase"></h3>
             <p id="qtyTitleML" class="text-sm font-bold text-slate-500 mb-4"></p>
             <input type="number" id="qtyInput" class="w-full text-center text-3xl font-black p-4 bg-slate-100 rounded-2xl mb-4 outline-none" value="1" step="0.01">
@@ -120,62 +123,52 @@
     </div>
 
     <script>
-        const baseURL = "https://raw.githubusercontent.com/usernameplay/KochachanVeg/refs/heads/main/veg/";
+        const originalAPI = "https://price-update-pi.vercel.app/api/veg";
+        const apiURL = "https://api.allorigins.win/get?url=" + encodeURIComponent(originalAPI);
 
-        const vegetables = [
-            {"id":1,"name":"Tomato","name_ml":"തക്കാളി","price":40,"image": baseURL + "tomato-256.png"},
-            {"id":2,"name":"Potato","name_ml":"ഉരുളക്കിഴങ്ങ്","price":22,"image": baseURL + "potato-256.png"},
-            {"id":3,"name":"Onion Big","name_ml":"സവാള","price":32,"image": baseURL + "onionbig-256.png"},
-            {"id":4,"name":"Onion Small","name_ml":"ചെറിയ ഉള്ളി","price":80,"image": baseURL + "onionsmall-256.png"},
-            {"id":5,"name":"Amaranth Leaves","name_ml":"ചീര","price":20,"image": baseURL + "amaranthleaves-256.png"},
-            {"id":6,"name":"Amla","name_ml":"നെല്ലിക്ക","price":80,"image": baseURL + "amla-256.png"},
-            {"id":7,"name":"Ash Gourd","name_ml":"കുമ്പളങ്ങ","price":30,"image": baseURL + "ashgourd-256.png"},
-            {"id":8,"name":"Banana Flower","name_ml":"കുടപ്പൻ","price":25,"image": baseURL + "bananaflower-256.png"},
-            {"id":9,"name":"Beetroot","name_ml":"ബീറ്റ്റൂട്ട്","price":45,"image": baseURL + "beetroot-256.png"},
-            {"id":10,"name":"Bitter Gourd","name_ml":"പാവയ്ക്ക","price":60,"image": baseURL + "bittergourd-256.png"},
-            {"id":11,"name":"Bottle Gourd","name_ml":"ചുരയ്ക്ക","price":30,"image": baseURL + "bottlegourd-256.png"},
-            {"id":12,"name":"Brinjal","name_ml":"വഴുതന","price":45,"image": baseURL + "brinjal-256.png"},
-            {"id":13,"name":"Brinjal Big","name_ml":"വലിയ വഴുതന","price":50,"image": baseURL + "brinjalbig-256.png"},
-            {"id":14,"name":"Cabbage","name_ml":"കാബേജ്","price":25,"image": baseURL + "cabbage-256.png"},
-            {"id":15,"name":"Capsicum","name_ml":"കാപ്സിക്കം","price":80,"image": baseURL + "capsicum-256.png"},
-            {"id":16,"name":"Cluster Beans","name_ml":"കൊത്തമര","price":55,"image": baseURL + "clusterbeans-256.png"},
-            {"id":17,"name":"Coconut","name_ml":"തേങ്ങ","price":35,"image": baseURL + "coconut-256.png"},
-            {"id":18,"name":"Colocasia","name_ml":"ചേമ്പ്","price":60,"image": baseURL + "colocasia-256.png"},
-            {"id":19,"name":"Coriander Leaves","name_ml":"മല്ലിയില","price":15,"image": baseURL + "corianderleaves-256.png"},
-            {"id":20,"name":"Cucumber","name_ml":"വെള്ളരിക്ക","price":35,"image": baseURL + "cucumber-256.png"},
-            {"id":21,"name":"Curry Leaves","name_ml":"കറിവേപ്പില","price":10,"image": baseURL + "curryleaves-256.png"},
-            {"id":22,"name":"Drumsticks","name_ml":"മുരിങ്ങക്കായ","price":70,"image": baseURL + "drumsticks-256.png"},
-            {"id":23,"name":"Elephant Yam","name_ml":"ചേന","price":70,"image": baseURL + "elephantyam-256.png"},
-            {"id":24,"name":"French Beans","name_ml":"ബീൻസ്","price":60,"image": baseURL + "frenchbeans-256.png"},
-            {"id":25,"name":"Garlic","name_ml":"വെളുത്തുള്ളി","price":120,"image": baseURL + "garlic-256.png"},
-            {"id":26,"name":"Ginger","name_ml":"ഇഞ്ചി","price":100,"image": baseURL + "ginger-256.png"},
-            {"id":27,"name":"Green Chili","name_ml":"പച്ചമുളക്","price":80,"image": baseURL + "greenchill-256.png"},
-            {"id":28,"name":"Ivy Gourd","name_ml":"കോവയ്ക്ക","price":45,"image": baseURL + "ivygourd-256.png"},
-            {"id":29,"name":"Lemon","name_ml":"നാരങ്ങ","price":60,"image": baseURL + "lemon-256.png"},
-            {"id":30,"name":"Plantain","name_ml":"ഏത്തക്കായ","price":50,"image": baseURL + "plantain-256.png"},
-            {"id":31,"name":"Pumpkin","name_ml":"മത്തങ്ങ","price":40,"image": baseURL + "pumpkin-256.png"},
-            {"id":32,"name":"Snake Gourd","name_ml":"പടവലങ്ങ","price":50,"image": baseURL + "snakegourd-256.png"},
-            {"id":33,"name":"Sweet Potato","name_ml":"മധുരക്കിഴങ്ങ്","price":40,"image": baseURL + "sweetpotato-256.png"}
-        ];
-
+        let vegetables = [];
         let cart = [];
         let selectedVeg = null;
 
-        function getItemImageHTML(src) {
-            if(src.includes('http')) {
-                return `<img src="${src}" class="item-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1147/1147814.png'">`;
+        async function loadVegetables() {
+            try {
+                const response = await fetch(apiURL);
+                const result = await response.json();
+                const data = typeof result.contents === 'string' ? JSON.parse(result.contents) : result.contents;
+                
+                if(Array.isArray(data)) {
+                    vegetables = data;
+                    renderList();
+                }
+            } catch (error) {
+                console.error("API Fetch Error:", error);
+                document.getElementById('vegContainer').innerHTML = `
+                    <div class="col-span-full text-center py-20 text-red-500 font-bold">
+                        ഡാറ്റ ലോഡ് ചെയ്യാൻ സാധിച്ചില്ല!
+                    </div>`;
             }
-            return `<div class="item-img">${src}</div>`;
+        }
+
+        function getItemDisplay(item) {
+            // ഇമേജ് ഉണ്ടെങ്കിൽ അത് കാണിക്കും, ഇല്ലെങ്കിൽ ഇമോജി കാണിക്കും
+            if (item.image && item.image.startsWith('http')) {
+                return `<img src="${item.image}" class="item-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                        <span class="item-emoji" style="display:none">${item.emoji || '🥗'}</span>`;
+            }
+            return `<span class="item-emoji">${item.emoji || '🥗'}</span>`;
         }
 
         function renderList() {
             const container = document.getElementById('vegContainer');
+            if(vegetables.length === 0) return;
+
             container.innerHTML = vegetables.map((v, i) => `
                 <div class="bg-white p-4 rounded-2xl text-center shadow-sm cursor-pointer flex flex-col justify-between transition-transform active:scale-95" onclick="openQtyModal(${i})">
                     <div>
-                        ${getItemImageHTML(v.image)}
-                        <div class="font-black text-slate-800 text-[11px] truncate uppercase">${v.name_ml || v.name}</div>
+                        ${getItemDisplay(v)}
+                        <div class="font-black text-slate-800 text-[13px] truncate uppercase">${v.name_ml || v.name_en}</div>
                         <div class="text-green-600 font-black text-lg mt-1">₹${v.price}</div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">${v.unit || '1 kg'}</div>
                     </div>
                 </div>
             `).join('');
@@ -187,18 +180,20 @@
             document.getElementById('grandTotal').innerText = total.toFixed(2);
             document.getElementById('sideTotal').innerText = total.toFixed(2);
             const list = document.getElementById('cartList');
+            
             if(cart.length === 0) {
                 list.innerHTML = `<div class="text-center py-20 text-slate-300 font-bold uppercase text-xs">Cart is empty</div>`;
                 return;
             }
+            
             list.innerHTML = cart.map((item, i) => `
                 <div class="flex justify-between items-center bg-white border border-slate-100 p-3 rounded-xl shadow-sm">
                     <div>
-                        <div class="font-black text-slate-800 text-[25px] uppercase">${item.name}</div>
-                        <div class="text-[18px] font-bold text-slate-400">${item.qty}kg x ₹${item.price}</div>
+                        <div class="font-black text-slate-800 text-[16px] uppercase">${item.name}</div>
+                        <div class="text-[12px] font-bold text-slate-400">${item.qty} ${item.unit.includes('kg') ? 'kg' : 'pc'} x ₹${item.price}</div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="font-black text-green-700 text-[22px]">₹${item.total.toFixed(2)}</span>
+                        <span class="font-black text-green-700 text-[18px]">₹${item.total.toFixed(2)}</span>
                         <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-300 p-1 no-print"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
@@ -206,50 +201,29 @@
         }
 
         async function takeScreenshot() {
-            if(cart.length === 0) return alert("Add items to take screenshot!");
-            
+            if(cart.length === 0) return alert("Add items!");
             const area = document.getElementById('screenshotArea');
             const stamp = document.getElementById('ssTimestamp');
-            stamp.innerText = "Customer Bill • " + new Date().toLocaleString('en-IN');
-
-            // Store original styles
+            stamp.innerText = "Bill Generated: " + new Date().toLocaleString('en-IN');
+            
             const originalStyle = area.style.cssText;
+            area.style.height = 'auto'; area.style.maxHeight = 'none'; area.style.overflow = 'visible';
 
-            // Expand area temporarily to capture all items
-            area.style.height = 'auto';
-            area.style.maxHeight = 'none';
-            area.style.overflow = 'visible';
-            area.style.background = "#ffffff";
-
-            // Small delay to ensure rendering
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            html2canvas(area, { 
-                scale: 3, 
-                backgroundColor: "#ffffff", 
-                useCORS: true,
-                scrollY: -window.scrollY // Fixes offset issues
-            }).then(canvas => {
+            html2canvas(area, { scale: 2, useCORS: true }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Customer_Bill_${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
+                link.download = `Bill_${Date.now()}.png`;
+                link.href = canvas.toDataURL();
                 link.click();
-
-                // Restore original styles
                 area.style.cssText = originalStyle;
             });
         }
 
         function sendWhatsAppOrder() {
             if(cart.length === 0) return alert("Add items!");
-            let message = "🛒 *പുതിയ ഓർഡർ - Kochachan Veg & Fruits* 🛒\n━━━━━━━━━━━━━━━━━━\n";
-            cart.forEach((item, index) => {
-                message += `${index + 1}. *${item.name}* (${item.qty}kg) = *₹${item.total.toFixed(2)}*\n`;
-            });
-            message += "━━━━━━━━━━━━━━━━━━\n";
-            message += `💰 *ആകെ തുക: ₹${document.getElementById('sideTotal').innerText}*\n`;
-            message += `📅 ${new Date().toLocaleString('en-IN')}`;
-            window.open(`https://wa.me/918589944310?text=${encodeURIComponent(message)}`, '_blank');
+            let msg = "🛒 *പുതിയ ഓർഡർ - Kochachan Veg* 🛒\n━━━━━━━━━━━━━━━━━━\n";
+            cart.forEach((it, idx) => msg += `${idx + 1}. *${it.name}* (${it.qty}${it.unit.includes('kg') ? 'kg' : 'pc'}) = *₹${it.total.toFixed(2)}*\n`);
+            msg += `━━━━━━━━━━━━━━━━━━\n💰 *ആകെ തുക: ₹${document.getElementById('sideTotal').innerText}*`;
+            window.open(`https://wa.me/918589944310?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function filterVeg() {
@@ -257,37 +231,47 @@
             const container = document.getElementById('vegContainer');
             const items = container.querySelectorAll('.bg-white');
             vegetables.forEach((v, i) => {
-                const match = v.name.toLowerCase().includes(q) || v.name_ml.toLowerCase().includes(q);
-                if(items[i]) items[i].style.display = match ? 'flex' : 'none';
+                const name = (v.name_en + v.name_ml + v.name_manglish).toLowerCase();
+                if(items[i]) items[i].style.display = name.includes(q) ? 'flex' : 'none';
             });
         }
 
         function toggleDarkMode() { document.getElementById('mainBody').classList.toggle('dark-mode'); }
         function toggleCart() { document.getElementById('cartSidebar').classList.toggle('show-cart'); }
+        
         function openQtyModal(i) {
             selectedVeg = vegetables[i];
-            document.getElementById('qtyTitle').innerText = selectedVeg.name;
+            document.getElementById('qtyTitle').innerText = selectedVeg.name_en;
             document.getElementById('qtyTitleML').innerText = selectedVeg.name_ml;
-            document.getElementById('qtyImgContainer').innerHTML = getItemImageHTML(selectedVeg.image);
+            document.getElementById('qtyImgContainer').innerHTML = selectedVeg.emoji || '🥗';
             document.getElementById('qtyInput').value = 1;
             document.getElementById('qtyModal').style.display = 'flex';
         }
+
         function closeQtyModal() { document.getElementById('qtyModal').style.display = 'none'; }
         function setQty(v) { document.getElementById('qtyInput').value = v; }
+
         function confirmAddToCart() {
             const q = parseFloat(document.getElementById('qtyInput').value);
             if(q > 0) {
-                cart.push({ name: selectedVeg.name_ml || selectedVeg.name, price: selectedVeg.price, qty: q, total: selectedVeg.price * q });
+                cart.push({ 
+                    name: selectedVeg.name_ml || selectedVeg.name_en, 
+                    price: parseFloat(selectedVeg.price), 
+                    qty: q, 
+                    unit: selectedVeg.unit || '1 kg',
+                    total: parseFloat(selectedVeg.price) * q 
+                });
                 updateCartUI(); closeQtyModal();
             }
         }
+
         function clearCart() { if(confirm("Clear bill?")) { cart = []; updateCartUI(); } }
 
         setInterval(() => { 
             document.getElementById('liveTime').innerText = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' }); 
         }, 1000);
 
-        renderList();
+        loadVegetables();
     </script>
 </body>
 </html>
