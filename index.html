@@ -10,65 +10,87 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: 'Manjari', sans-serif; transition: 0.3s; overflow-x: hidden; }
-        .dark-mode { background-color: #020617 !important; color: #f8fafc; }
-        .dark-mode .bg-white { background-color: #1e293b !important; color: white !important; border-color: #334155; }
-        .dark-mode .text-slate-800 { color: #f1f5f9 !important; }
         
+        /* Mode Colors */
+        .dark-mode { background-color: #020617 !important; color: #f8fafc; }
+        .dark-mode .bg-white { background-color: #1e293b !important; color: white !important; }
+        .dark-mode .text-slate-800, .dark-mode .text-slate-400 { color: #f1f5f9 !important; }
+        
+        /* Animations */
         .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        
+        @keyframes bounce-basket {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        .basket-bounce { animation: bounce-basket 0.5s ease; }
+
         #cartSidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .show-cart { transform: translateY(0) !important; }
         
-        .item-emoji { font-size: 40px; margin-bottom: 8px; display: block; }
-        .item-img { width: 50px; height: 50px; object-fit: contain; margin: 0 auto 8px; }
+        .item-card { height: 160px; }
+        .item-emoji { font-size: 55px; }
+        .item-img { width: 65px; height: 65px; object-fit: contain; margin: 0 auto; }
         
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-24" id="mainBody">
+<body class="bg-slate-50 min-h-screen pb-24 text-slate-800" id="mainBody">
 
-    <header class="bg-green-800 text-white p-4 shadow-lg sticky top-0 z-50 no-print">
-        <div class="max-w-7xl mx-auto flex justify-between items-center px-2">
-            <div class="w-10"></div> 
-            <div class="text-center">
-                <h1 class="text-xl font-black tracking-tight leading-none uppercase">Kochachan 🥕 Veg & Fruits 🍎</h1>
-                <div id="liveTime" class="text-[10px] font-bold opacity-90 mt-1 uppercase"></div>
+    <div id="screenshotArea" class="bg-white">
+        <header class="bg-green-800 text-white p-5 shadow-lg flex flex-col items-center">
+            <h1 class="text-2xl font-black tracking-tight uppercase text-center">Kochachan 🥕 Veg & Fruits 🍎</h1>
+            <div id="billDateTime" class="text-xs font-bold opacity-90 mt-1 uppercase"></div>
+        </header>
+
+        <div class="bg-yellow-400 py-1 text-center no-print">
+            <div class="overflow-hidden">
+                <div class="animate-marquee">
+                    <span class="text-green-900 font-black text-sm uppercase">
+                        🌼 Happy Vishu 🌼 | ഏവർക്കും ഐശ്വര്യപൂർണ്ണമായ വിഷു ആശംസകൾ! 🥬🍅
+                    </span>
+                </div>
             </div>
-            <button onclick="toggleDarkMode()" class="bg-green-700 h-10 w-10 rounded-lg flex items-center justify-center hover:bg-green-600 transition">
-                <i class="fas fa-moon"></i>
-            </button>
         </div>
-    </header>
 
-    <div class="bg-yellow-400 overflow-hidden py-1 border-b border-yellow-500 shadow-inner no-print">
-        <div class="animate-marquee">
-            <span class="text-green-900 font-black text-sm uppercase tracking-wide">
-                🌼 Happy Vishu 🌼 | ഏവർക്കും ഐശ്വര്യപൂർണ്ണമായ വിഷു ആശംസകൾ! 🥬🍅🥕🧅🥔 | UPDATING | TEST RUN 🙇
-            </span>
+        <main class="max-w-7xl mx-auto p-4">
+            <div class="mb-4 no-print relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക (Search)..." 
+                    class="w-full pl-12 p-4 rounded-2xl border-2 border-slate-200 outline-none focus:border-green-500 font-bold text-slate-800 shadow-sm transition">
+            </div>
+            
+            <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div class="col-span-full text-center py-20 font-bold text-slate-400">Loading...</div>
+            </div>
+        </main>
+
+        <div id="billPrintArea" class="hidden p-6 bg-white">
+            <div id="cartListBill" class="space-y-4"></div>
+            <div class="mt-8 p-6 bg-green-50 rounded-3xl border-2 border-green-200 text-center">
+                <div class="text-slate-500 font-black text-xs uppercase mb-1">Grand Total</div>
+                <div class="text-4xl font-black text-green-700">₹<span id="billTotal">0</span> 😊</div>
+                <div class="text-[10px] text-slate-400 mt-4 uppercase font-bold">Thank you for shopping with us!</div>
+            </div>
         </div>
     </div>
 
-    <main class="max-w-7xl mx-auto p-4">
-        <div class="mb-4 no-print relative">
-            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക (Search)..." 
-                class="w-full pl-12 p-3.5 rounded-2xl border-2 border-slate-200 outline-none focus:border-green-500 font-bold text-slate-800 shadow-sm transition">
-        </div>
-        <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            <div class="col-span-full text-center py-20 font-bold text-slate-400">Loading Items...</div>
-        </div>
-    </main>
-
-    <div class="fixed bottom-0 left-0 right-0 bg-green-700 text-white p-4 shadow-[0_-4px_15px_rgba(0,0,0,0.2)] z-[60] no-print flex justify-between items-center cursor-pointer" onclick="toggleCart()">
-        <div class="flex items-center gap-3">
-            <div class="bg-white/20 p-2 rounded-lg"><i class="fas fa-shopping-basket"></i></div>
+    <div class="fixed bottom-0 left-0 right-0 bg-green-700 text-white p-4 shadow-2xl z-[60] no-print flex justify-between items-center cursor-pointer" onclick="toggleCart()">
+        <div class="flex items-center gap-4">
+            <div id="basketIcon" class="bg-white/20 p-3 rounded-xl"><i class="fas fa-shopping-basket text-xl"></i></div>
             <div>
-                <div class="font-black text-sm uppercase tracking-tight">Bill Details</div>
-                <div class="text-[11px] font-bold opacity-80"><span id="itemCount">0</span> Items Added</div>
+                <div class="font-black text-sm uppercase">Bill Details</div>
+                <div class="text-[11px] font-bold opacity-80"><span id="itemCount">0</span> Items</div>
             </div>
         </div>
-        <div class="text-right">
-            <div class="text-2xl font-black">₹<span id="grandTotal">0</span></div>
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <div class="text-2xl font-black">₹<span id="grandTotal">0</span></div>
+            </div>
+            <button onclick="event.stopPropagation(); toggleDarkMode();" class="bg-white/10 h-10 w-10 rounded-full flex items-center justify-center">
+                <i class="fas fa-moon text-xs"></i>
+            </button>
         </div>
     </div>
 
@@ -77,46 +99,46 @@
         <div class="px-6 py-4 border-b flex justify-between items-center">
             <span class="font-black text-xl text-slate-800">Current Bill</span>
             <div class="flex gap-3">
-                <button onclick="takeScreenshot()" class="bg-blue-50 text-blue-600 p-2.5 rounded-xl hover:bg-blue-100 transition">
+                <button onclick="takeScreenshot()" class="bg-blue-50 text-blue-600 p-3 rounded-xl hover:bg-blue-100 transition">
                     <i class="fas fa-camera"></i>
                 </button>
                 <button onclick="toggleCart()" class="text-slate-400 text-3xl"><i class="fas fa-times-circle"></i></button>
             </div>
         </div>
 
-        <div id="screenshotArea" class="flex-1 overflow-y-auto p-4 bg-white">
+        <div class="flex-1 overflow-y-auto p-4">
             <div id="cartList" class="space-y-3"></div>
-            <div id="billSummary" class="mt-6 p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-black text-slate-500 uppercase text-[10px]">Grand Total</span>
-                    <span class="font-black text-2xl text-green-700">₹<span id="sideTotal">0</span></span>
-                </div>
-                <div id="ssTimestamp" class="text-[9px] text-slate-400 font-bold text-center mt-2 uppercase"></div>
-            </div>
         </div>
 
-        <div class="p-4 space-y-3 no-print">
-            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black shadow-lg uppercase flex items-center justify-center gap-2 transition-all active:scale-95">
+        <div class="p-6 space-y-3 bg-slate-50 rounded-t-3xl border-t">
+            <div class="flex justify-between items-center mb-2 px-2">
+                <span class="font-black text-slate-400 uppercase text-xs">Total Amount</span>
+                <span class="font-black text-2xl text-green-700">₹<span id="sideTotal">0</span></span>
+            </div>
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black shadow-lg uppercase flex items-center justify-center gap-2 active:scale-95 transition">
                 <i class="fab fa-whatsapp text-xl"></i> Order Via WhatsApp
             </button>
-            <button onclick="clearCart()" class="w-full py-1 text-red-500 font-black text-xs uppercase">Clear All Items</button>
+            <button onclick="clearCart()" class="w-full py-1 text-red-500 font-bold text-[10px] uppercase">Clear Cart</button>
         </div>
     </div>
 
     <div id="qtyModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
-        <div class="bg-white p-6 rounded-3xl w-full max-w-xs shadow-2xl text-center">
-            <div id="qtyImgContainer" class="mb-3 text-5xl"></div>
-            <h3 id="qtyTitle" class="text-xl font-black text-slate-800 uppercase"></h3>
-            <p id="qtyTitleML" class="text-sm font-bold text-slate-500 mb-4"></p>
-            <input type="number" id="qtyInput" class="w-full text-center text-3xl font-black p-4 bg-slate-100 rounded-2xl mb-4 outline-none" value="1" step="0.01">
-            <div class="grid grid-cols-4 gap-2 mb-6">
-                <button onclick="setQty(0.1)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black">100g</button>
-                <button onclick="setQty(0.25)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black">250g</button>
-                <button onclick="setQty(0.5)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black">500g</button>
-                <button onclick="setQty(0.75)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black">750g</button>
+        <div class="bg-white p-6 rounded-[2.5rem] w-full max-w-xs shadow-2xl text-center">
+            <div id="qtyImgContainer" class="mb-2"></div>
+            <h3 id="qtyTitle" class="text-2xl font-black text-slate-800 uppercase"></h3>
+            <p id="qtyTitleML" class="text-sm font-bold text-slate-500 mb-6"></p>
+            <div class="relative">
+                <input type="number" id="qtyInput" class="w-full text-center text-4xl font-black p-5 bg-slate-100 rounded-2xl mb-6 outline-none text-green-700" value="1" step="0.01">
+                <span class="absolute right-4 top-6 font-black text-slate-300">KG</span>
             </div>
-            <div class="flex gap-2">
-                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-black">ADD</button>
+            <div class="grid grid-cols-4 gap-2 mb-6">
+                <button onclick="setQty(0.1)" class="bg-slate-100 p-2 rounded-xl text-[10px] font-black">100g</button>
+                <button onclick="setQty(0.25)" class="bg-slate-100 p-2 rounded-xl text-[10px] font-black">250g</button>
+                <button onclick="setQty(0.5)" class="bg-slate-100 p-2 rounded-xl text-[10px] font-black">500g</button>
+                <button onclick="setQty(1)" class="bg-slate-100 p-2 rounded-xl text-[10px] font-black">1kg</button>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-black shadow-lg">ADD</button>
                 <button onclick="closeQtyModal()" class="flex-1 bg-slate-200 text-slate-600 py-4 rounded-2xl font-black">BACK</button>
             </div>
         </div>
@@ -135,40 +157,21 @@
                 const response = await fetch(apiURL);
                 const result = await response.json();
                 const data = typeof result.contents === 'string' ? JSON.parse(result.contents) : result.contents;
-                
-                if(Array.isArray(data)) {
-                    vegetables = data;
-                    renderList();
-                }
-            } catch (error) {
-                console.error("API Fetch Error:", error);
-                document.getElementById('vegContainer').innerHTML = `
-                    <div class="col-span-full text-center py-20 text-red-500 font-bold">
-                        ഡാറ്റ ലോഡ് ചെയ്യാൻ സാധിച്ചില്ല!
-                    </div>`;
+                if(Array.isArray(data)) { vegetables = data; renderList(); }
+            } catch (e) {
+                document.getElementById('vegContainer').innerHTML = `<div class="col-span-full text-center py-20 text-red-500">Error Loading Data!</div>`;
             }
-        }
-
-        function getItemDisplay(item) {
-            // ഇമേജ് ഉണ്ടെങ്കിൽ അത് കാണിക്കും, ഇല്ലെങ്കിൽ ഇമോജി കാണിക്കും
-            if (item.image && item.image.startsWith('http')) {
-                return `<img src="${item.image}" class="item-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-                        <span class="item-emoji" style="display:none">${item.emoji || '🥗'}</span>`;
-            }
-            return `<span class="item-emoji">${item.emoji || '🥗'}</span>`;
         }
 
         function renderList() {
             const container = document.getElementById('vegContainer');
-            if(vegetables.length === 0) return;
-
             container.innerHTML = vegetables.map((v, i) => `
-                <div class="bg-white p-4 rounded-2xl text-center shadow-sm cursor-pointer flex flex-col justify-between transition-transform active:scale-95" onclick="openQtyModal(${i})">
+                <div class="bg-white p-5 rounded-3xl text-center shadow-sm cursor-pointer flex flex-col justify-between transition-all active:scale-90 border border-slate-100 item-card" onclick="openQtyModal(${i})">
                     <div>
-                        ${getItemDisplay(v)}
-                        <div class="font-black text-slate-800 text-[13px] truncate uppercase">${v.name_ml || v.name_en}</div>
-                        <div class="text-green-600 font-black text-lg mt-1">₹${v.price}</div>
-                        <div class="text-[10px] text-slate-400 font-bold uppercase">${v.unit || '1 kg'}</div>
+                        <div class="item-emoji">${v.emoji || '🥗'}</div>
+                        <div class="font-black text-slate-800 text-[14px] leading-tight uppercase mt-2">${v.name_ml || v.name_en}</div>
+                        <div class="text-green-600 font-black text-xl mt-1">₹${v.price}</div>
+                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">${v.unit || '1 kg'}</div>
                     </div>
                 </div>
             `).join('');
@@ -179,61 +182,70 @@
             document.getElementById('itemCount').innerText = cart.length;
             document.getElementById('grandTotal').innerText = total.toFixed(2);
             document.getElementById('sideTotal').innerText = total.toFixed(2);
-            const list = document.getElementById('cartList');
+            document.getElementById('billTotal').innerText = total.toFixed(2);
             
+            const list = document.getElementById('cartList');
+            const listBill = document.getElementById('cartListBill');
+
             if(cart.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 text-slate-300 font-bold uppercase text-xs">Cart is empty</div>`;
+                list.innerHTML = `<div class="text-center py-10 text-slate-300 font-bold text-xs">NO ITEMS</div>`;
                 return;
             }
-            
-            list.innerHTML = cart.map((item, i) => `
-                <div class="flex justify-between items-center bg-white border border-slate-100 p-3 rounded-xl shadow-sm">
+
+            const itemsHTML = cart.map((item, i) => `
+                <div class="flex justify-between items-center bg-white border border-slate-100 p-4 rounded-2xl shadow-sm">
                     <div>
-                        <div class="font-black text-slate-800 text-[16px] uppercase">${item.name}</div>
-                        <div class="text-[12px] font-bold text-slate-400">${item.qty} ${item.unit.includes('kg') ? 'kg' : 'pc'} x ₹${item.price}</div>
+                        <div class="font-black text-slate-800 text-[18px] uppercase">${item.name}</div>
+                        <div class="text-[13px] font-bold text-slate-400">${item.qty}kg × ₹${item.price}</div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-black text-green-700 text-[18px]">₹${item.total.toFixed(2)}</span>
-                        <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-300 p-1 no-print"><i class="fas fa-trash-alt"></i></button>
+                    <div class="flex items-center gap-4">
+                        <span class="font-black text-green-700 text-[20px]">₹${item.total.toFixed(2)}</span>
+                        <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-300 no-print"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             `).join('');
+            
+            list.innerHTML = itemsHTML;
+            listBill.innerHTML = itemsHTML; // Same for screenshot
         }
 
         async function takeScreenshot() {
-            if(cart.length === 0) return alert("Add items!");
-            const area = document.getElementById('screenshotArea');
-            const stamp = document.getElementById('ssTimestamp');
-            stamp.innerText = "Bill Generated: " + new Date().toLocaleString('en-IN');
+            if(cart.length === 0) return alert("Add items first!");
+            const printArea = document.getElementById('billPrintArea');
+            const mainBody = document.getElementById('mainBody');
             
-            const originalStyle = area.style.cssText;
-            area.style.height = 'auto'; area.style.maxHeight = 'none'; area.style.overflow = 'visible';
+            // Show print area, hide others
+            printArea.classList.remove('hidden');
+            document.querySelector('main').classList.add('no-print');
+            
+            const canvas = await html2canvas(document.getElementById('screenshotArea'), { scale: 2, useCORS: true });
+            const link = document.createElement('a');
+            link.download = `Kochachan_Bill_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
 
-            html2canvas(area, { scale: 2, useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Bill_${Date.now()}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                area.style.cssText = originalStyle;
-            });
+            // Reset
+            printArea.classList.add('hidden');
+            document.querySelector('main').classList.remove('no-print');
         }
 
         function sendWhatsAppOrder() {
             if(cart.length === 0) return alert("Add items!");
-            let msg = "🛒 *പുതിയ ഓർഡർ - Kochachan Veg* 🛒\n━━━━━━━━━━━━━━━━━━\n";
-            cart.forEach((it, idx) => msg += `${idx + 1}. *${it.name}* (${it.qty}${it.unit.includes('kg') ? 'kg' : 'pc'}) = *₹${it.total.toFixed(2)}*\n`);
-            msg += `━━━━━━━━━━━━━━━━━━\n💰 *ആകെ തുക: ₹${document.getElementById('sideTotal').innerText}*`;
-            window.open(`https://wa.me/918589944310?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function filterVeg() {
-            const q = document.getElementById('searchInput').value.toLowerCase();
-            const container = document.getElementById('vegContainer');
-            const items = container.querySelectorAll('.bg-white');
-            vegetables.forEach((v, i) => {
-                const name = (v.name_en + v.name_ml + v.name_manglish).toLowerCase();
-                if(items[i]) items[i].style.display = name.includes(q) ? 'flex' : 'none';
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-IN') + ", " + now.toLocaleTimeString('en-IN');
+            
+            let msg = "🛒 *പുതിയ ഓർഡർ - Kochachan 🌶️ Vegetable And Fruits 🍉* 🛒\n";
+            msg += "━━━━━━━━━━━━━━━━━━\n";
+            cart.forEach((it, idx) => {
+                msg += `${idx + 1}. *${it.name}* 📦\n`;
+                msg += `   ${it.qty}kg × ₹${it.price} = *₹${it.total.toFixed(2)}*\n`;
             });
+            msg += "━━━━━━━━━━━━━━━━━━\n";
+            msg += `💰 *ആകെ തുക: ₹${document.getElementById('sideTotal').innerText}*\n`;
+            msg += "━━━━━━━━━━━━━━━━━━\n";
+            msg += `📅 Date: ${dateStr}`;
+            
+            window.open(`https://wa.me/918589944310?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function toggleDarkMode() { document.getElementById('mainBody').classList.toggle('dark-mode'); }
@@ -243,7 +255,7 @@
             selectedVeg = vegetables[i];
             document.getElementById('qtyTitle').innerText = selectedVeg.name_en;
             document.getElementById('qtyTitleML').innerText = selectedVeg.name_ml;
-            document.getElementById('qtyImgContainer').innerHTML = selectedVeg.emoji || '🥗';
+            document.getElementById('qtyImgContainer').innerText = selectedVeg.emoji || '🥗';
             document.getElementById('qtyInput').value = 1;
             document.getElementById('qtyModal').style.display = 'flex';
         }
@@ -258,17 +270,32 @@
                     name: selectedVeg.name_ml || selectedVeg.name_en, 
                     price: parseFloat(selectedVeg.price), 
                     qty: q, 
-                    unit: selectedVeg.unit || '1 kg',
                     total: parseFloat(selectedVeg.price) * q 
                 });
+                
+                // Animation
+                const basket = document.getElementById('basketIcon');
+                basket.classList.add('basket-bounce');
+                setTimeout(() => basket.classList.remove('basket-bounce'), 500);
+
                 updateCartUI(); closeQtyModal();
             }
         }
 
-        function clearCart() { if(confirm("Clear bill?")) { cart = []; updateCartUI(); } }
+        function filterVeg() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.item-card');
+            vegetables.forEach((v, i) => {
+                const name = (v.name_en + v.name_ml + v.name_manglish).toLowerCase();
+                items[i].style.display = name.includes(q) ? 'flex' : 'none';
+            });
+        }
+
+        function clearCart() { if(confirm("Clear Cart?")) { cart = []; updateCartUI(); } }
 
         setInterval(() => { 
-            document.getElementById('liveTime').innerText = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' }); 
+            const now = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+            document.getElementById('billDateTime').innerText = now; 
         }, 1000);
 
         loadVegetables();
