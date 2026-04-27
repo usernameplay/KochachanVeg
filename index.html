@@ -9,12 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Manjari', sans-serif; transition: background 0.4s; overflow-x: hidden; background-color: #f8fafc; }
+        body { font-family: 'Manjari', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
         .dark-mode { background-color: #020617 !important; color: #f8fafc; }
         .dark-mode .bg-card { background-color: #1e293b !important; border-color: #334155 !important; }
         .dark-mode .bg-white { background-color: #1e293b !important; color: white; }
         
-        .glass-header { background: #15803d; }
         .product-card { transition: all 0.3s; border-radius: 2rem; border: 1px solid #e2e8f0; }
         .tab-active { background-color: #166534; color: white; }
         .show-cart { transform: translateY(0) !important; }
@@ -23,67 +22,34 @@
         #toast.show { visibility: visible; animation: slideup 0.5s, slidedown 0.5s 2.5s; }
         @keyframes slideup { from {bottom: 0; opacity: 0;} to {bottom: 120px; opacity: 1;} }
         @keyframes slidedown { from {bottom: 120px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-
-        /* Print Layout */
-        #receipt-print { display: none; width: 80mm; background: white; padding: 10px; color: black; font-family: monospace; }
-        @media print {
-            body * { visibility: hidden; }
-            #receipt-print, #receipt-print * { visibility: visible; }
-            #receipt-print { position: absolute; left: 0; top: 0; display: block !important; width: 100%; }
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body id="mainBody">
 
     <div id="toast">ലിസ്റ്റിലേക്ക് ചേർത്തു! 🥬</div>
 
-    <div id="receipt-print">
-        <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px;">
-            <h2 style="margin: 0;">KOCHACHAN MARKET</h2>
-            <p style="font-size: 10px;">Date: <span id="p-date"></span></p>
-        </div>
-        <div style="font-size: 11px; margin-bottom: 10px;">
-            <p>Customer: <span id="p-name"></span></p>
-            <p>Place: <span id="p-place"></span></p>
-        </div>
-        <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
-            <thead>
-                <tr style="border-bottom: 1px solid #000;">
-                    <th align="left">Item</th>
-                    <th align="center">Qty</th>
-                    <th align="right">Total</th>
-                </tr>
-            </thead>
-            <tbody id="p-items"></tbody>
-        </table>
-        <div style="border-top: 1px dashed #000; margin-top: 10px; padding-top: 5px; font-weight: bold; display: flex; justify-content: space-between;">
-            <span>TOTAL:</span>
-            <span>₹<span id="p-total"></span></span>
-        </div>
-        <p style="text-align: center; font-size: 10px; margin-top: 20px;">നന്ദി! വീണ്ടും വരിക.</p>
-    </div>
-
-    <header class="glass-header sticky top-0 z-50 text-white p-5 shadow-lg rounded-b-[2.5rem]">
-        <div class="max-w-7xl mx-auto flex flex-col items-center text-center">
-            <h1 class="text-2xl font-black tracking-tight">KOCHACHAN MARKET</h1>
+    <header class="bg-green-700 sticky top-0 z-50 text-white p-5 shadow-lg rounded-b-[2.5rem]">
+        <div class="max-w-7xl mx-auto flex flex-col items-center">
+            <h1 class="text-2xl font-black tracking-tight uppercase">KOCHACHAN MARKET</h1>
             <div id="billDateTime" class="text-[10px] font-bold opacity-80 mt-1 uppercase"></div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto p-4">
         <div class="sticky top-24 z-40 bg-slate-50/90 backdrop-blur-md pt-2 pb-4">
-            <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക..." 
+            <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക (Search)..." 
                 class="w-full p-4 rounded-2xl border shadow-sm outline-none mb-4 font-bold dark:bg-slate-800">
             
             <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                <button onclick="filterCategory('all')" id="tab-all" class="tab-active px-6 py-2 rounded-full font-bold text-sm whitespace-nowrap">എല്ലാം</button>
+                <button onclick="filterCategory('all')" id="tab-all" class="tab-active px-6 py-2 rounded-full font-bold text-sm whitespace-nowrap border">എല്ലാം</button>
                 <button onclick="filterCategory('veg')" id="tab-veg" class="bg-white px-6 py-2 rounded-full font-bold text-sm border whitespace-nowrap">പച്ചക്കറികൾ</button>
                 <button onclick="filterCategory('fruit')" id="tab-fruit" class="bg-white px-6 py-2 rounded-full font-bold text-sm border whitespace-nowrap">പഴങ്ങൾ</button>
             </div>
         </div>
         
         <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <div class="col-span-full text-center py-20 font-bold text-slate-400">Loading Market Data...</div>
+            <div class="col-span-full text-center py-20 font-bold text-slate-400">Loading Items...</div>
         </div>
     </main>
 
@@ -95,31 +61,31 @@
                     <span id="cartBadge" class="absolute -top-2 -right-2 bg-red-500 text-[10px] px-2 py-0.5 rounded-full border-2 border-green-700 hidden">0</span>
                 </div>
                 <div>
-                    <div class="text-[10px] opacity-70 font-bold">Grand Total</div>
+                    <div class="text-[10px] opacity-70 font-bold uppercase">Total</div>
                     <div class="text-xl font-black">₹<span id="grandTotal">0</span></div>
                 </div>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="event.stopPropagation(); toggleDarkMode();" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                    <i class="fas fa-adjust"></i>
+                    <i class="fas fa-adjust text-sm"></i>
                 </button>
-                <div class="bg-white text-green-700 px-5 py-2.5 rounded-2xl font-black text-xs">View List</div>
+                <div class="bg-white text-green-700 px-5 py-2.5 rounded-2xl font-black text-xs uppercase shadow-sm">View List</div>
             </div>
         </div>
     </div>
 
     <div id="qtyModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-[110] p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 p-8 rounded-[3rem] w-full max-w-sm text-center">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-[3rem] w-full max-w-sm text-center shadow-2xl">
             <div id="qtyImg" class="text-6xl mb-2"></div>
-            <h3 id="qtyTitle" class="text-2xl font-black uppercase"></h3>
+            <h3 id="qtyTitle" class="text-2xl font-black uppercase dark:text-white"></h3>
             <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-700 p-2 rounded-2xl my-6">
-                <button onclick="adjustQty(-0.25)" class="w-12 h-12 bg-white rounded-xl font-bold text-xl">-</button>
-                <input type="number" id="qtyInput" class="bg-transparent text-center text-2xl font-bold w-20 outline-none" value="1" step="0.25">
+                <button onclick="adjustQty(-0.25)" class="w-12 h-12 bg-white dark:bg-slate-600 rounded-xl font-bold text-xl">-</button>
+                <input type="number" id="qtyInput" class="bg-transparent text-center text-2xl font-bold w-20 outline-none dark:text-white" value="1" step="0.25">
                 <button onclick="adjustQty(0.25)" class="w-12 h-12 bg-green-600 text-white rounded-xl font-bold text-xl">+</button>
             </div>
             <div class="flex gap-2">
-                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold">ADD</button>
-                <button onclick="closeQtyModal()" class="px-6 bg-slate-200 dark:bg-slate-700 py-4 rounded-2xl">Back</button>
+                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-bold uppercase shadow-lg">Add to List</button>
+                <button onclick="closeQtyModal()" class="px-6 bg-slate-200 dark:bg-slate-700 py-4 rounded-2xl font-bold uppercase text-xs">Back</button>
             </div>
         </div>
     </div>
@@ -127,18 +93,22 @@
     <div id="cartSidebar" class="fixed inset-x-0 bottom-0 bg-white dark:bg-slate-900 h-[90vh] rounded-t-[3rem] z-[70] transform translate-y-full transition-transform duration-500 flex flex-col shadow-2xl">
         <div class="w-12 h-1 bg-slate-300 mx-auto mt-4 mb-4" onclick="toggleCart()"></div>
         <div class="px-8 flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-black">MY LIST</h2>
-            <button onclick="toggleCart()" class="text-slate-400 text-2xl">&times;</button>
+            <h2 class="text-2xl font-black dark:text-white uppercase">Shopping List</h2>
+            <button onclick="toggleCart()" class="text-slate-400 text-3xl">&times;</button>
         </div>
         <div id="cartList" class="flex-1 overflow-y-auto px-6"></div>
-        <div class="p-6 bg-slate-50 dark:bg-slate-800 rounded-t-[2.5rem] border-t space-y-3">
+        <div class="p-6 bg-slate-50 dark:bg-slate-800 rounded-t-[2.5rem] border-t dark:border-slate-700 space-y-3">
             <div class="grid grid-cols-2 gap-2">
-                <input type="text" id="custName" placeholder="പേര്" class="p-4 rounded-xl border dark:bg-slate-700">
-                <input type="text" id="custPlace" placeholder="സ്ഥലം" class="p-4 rounded-xl border dark:bg-slate-700">
+                <input type="text" id="custName" placeholder="പേര് (Name)" class="p-4 rounded-xl border dark:bg-slate-700 dark:text-white font-bold outline-none focus:ring-2 focus:ring-green-500">
+                <input type="text" id="custPlace" placeholder="സ്ഥലം (Place)" class="p-4 rounded-xl border dark:bg-slate-700 dark:text-white font-bold outline-none focus:ring-2 focus:ring-green-500">
             </div>
             <div class="flex gap-2">
-                <button onclick="printReceipt()" class="flex-1 bg-black text-white py-4 rounded-xl font-bold">PRINT BILL</button>
-                <button onclick="sendWhatsAppOrder()" class="flex-1 bg-green-600 text-white py-4 rounded-xl font-bold">WHATSAPP</button>
+                <button onclick="printReceipt()" class="flex-1 bg-slate-900 text-white py-4 rounded-xl font-black flex items-center justify-center gap-2 uppercase text-sm">
+                    <i class="fas fa-print"></i> Print Bill
+                </button>
+                <button onclick="sendWhatsAppOrder()" class="flex-1 bg-green-600 text-white py-4 rounded-xl font-black flex items-center justify-center gap-2 uppercase text-sm">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
             </div>
         </div>
     </div>
@@ -164,18 +134,19 @@
 
         function renderList(items) {
             const container = document.getElementById('vegContainer');
-            container.innerHTML = items.map((v, idx) => `
-                <div class="bg-white dark:bg-slate-800 product-card p-5 text-center shadow-sm cursor-pointer" onclick="openQtyModal(${vegetables.indexOf(v)})">
+            container.innerHTML = items.map((v) => `
+                <div class="bg-white dark:bg-slate-800 product-card p-5 text-center shadow-sm cursor-pointer active:scale-95" onclick="openQtyModal(${vegetables.indexOf(v)})">
                     <div class="text-4xl mb-2">${v.emoji || '🥗'}</div>
-                    <div class="font-bold text-sm mb-1 h-10 flex items-center justify-center">${v.name_ml || v.name_en}</div>
+                    <div class="font-bold text-xs mb-1 h-10 flex items-center justify-center dark:text-white uppercase">${v.name_ml || v.name_en}</div>
                     <div class="text-green-600 font-black text-xl">₹${v.price}</div>
+                    <div class="text-[9px] text-slate-400 font-bold uppercase">${v.unit || 'Per KG'}</div>
                 </div>
             `).join('');
         }
 
         function filterCategory(cat) {
             document.querySelectorAll('[onclick^="filterCategory"]').forEach(btn => btn.className = "bg-white px-6 py-2 rounded-full font-bold text-sm border whitespace-nowrap");
-            document.getElementById(`tab-${cat}`).className = "tab-active px-6 py-2 rounded-full font-bold text-sm whitespace-nowrap";
+            document.getElementById(`tab-${cat}`).className = "tab-active px-6 py-2 rounded-full font-bold text-sm whitespace-nowrap border";
             renderList(cat === 'all' ? vegetables : vegetables.filter(v => v.category === cat));
         }
 
@@ -223,41 +194,61 @@
             document.getElementById('cartBadge').classList.toggle('hidden', cart.length === 0);
             
             document.getElementById('cartList').innerHTML = cart.map((it, i) => `
-                <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-700 p-4 rounded-2xl mb-2">
+                <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl mb-2 border dark:border-slate-700">
                     <div>
-                        <div class="font-bold">${it.name}</div>
-                        <div class="text-xs">${it.qty}kg x ₹${it.price}</div>
+                        <div class="font-bold dark:text-white uppercase text-sm">${it.name}</div>
+                        <div class="text-[10px] text-slate-500 font-bold">${it.qty}kg x ₹${it.price}</div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="font-bold">₹${it.total.toFixed(0)}</div>
-                        <button onclick="cart.splice(${i},1); updateCartUI();" class="text-red-500">&times;</button>
+                        <div class="font-black text-green-600">₹${it.total.toFixed(0)}</div>
+                        <button onclick="cart.splice(${i},1); updateCartUI();" class="text-red-500 p-2"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             `).join('');
         }
 
+        // Bluetooth Printing using RawBT Intent
         function printReceipt() {
             if (cart.length === 0) return alert("ലിസ്റ്റ് കാലിയാണ്!");
-            document.getElementById('p-date').innerText = new Date().toLocaleString();
-            document.getElementById('p-name').innerText = document.getElementById('custName').value || "Guest";
-            document.getElementById('p-place').innerText = document.getElementById('custPlace').value || "-";
-            document.getElementById('p-total').innerText = document.getElementById('grandTotal').innerText;
-            document.getElementById('p-items').innerHTML = cart.map(it => `
-                <tr>
-                    <td>${it.name}</td>
-                    <td align="center">${it.qty}</td>
-                    <td align="right">₹${it.total.toFixed(0)}</td>
-                </tr>
-            `).join('');
-            window.print();
+
+            const name = document.getElementById('custName').value || "Guest";
+            const place = document.getElementById('custPlace').value || "-";
+            const date = new Date().toLocaleString('en-IN');
+            
+            let printData = "--------------------------------\n";
+            printData += "       KOCHACHAN MARKET        \n";
+            printData += "--------------------------------\n";
+            printData += `DATE: ${date}\n`;
+            printData += `NAME: ${name}\n`;
+            printData += `PLACE: ${place}\n`;
+            printData += "--------------------------------\n";
+            printData += "ITEM            QTY    TOTAL\n";
+            printData += "--------------------------------\n";
+
+            cart.forEach(it => {
+                let itemName = it.name.substring(0, 14).padEnd(15);
+                let qty = it.qty.toString().padEnd(6);
+                let total = "Rs." + it.total.toFixed(0);
+                printData += `${itemName} ${qty} ${total}\n`;
+            });
+
+            printData += "--------------------------------\n";
+            printData += `GRAND TOTAL: Rs.${document.getElementById('grandTotal').innerText}\n`;
+            printData += "--------------------------------\n";
+            printData += "   THANK YOU! VISIT AGAIN   \n\n\n\n";
+
+            // Sending to RawBT Printer App
+            const S = "intent://ru.a402d.rawbtprinter.action.PRINT#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;S.text=" + encodeURIComponent(printData) + ";end;";
+            window.location.href = S;
         }
 
         function sendWhatsAppOrder() {
-            if(cart.length === 0) return;
-            confetti({ particleCount: 100 });
-            let msg = `🧾 *KOCHACHAN MARKET*\n`;
+            if(cart.length === 0) return alert("List empty!");
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            const name = document.getElementById('custName').value || "Guest";
+            let msg = `🧾 *KOCHACHAN MARKET*\n👤 Customer: ${name}\n━━━━━━━━━━━━━━\n`;
             cart.forEach(it => { msg += `• ${it.name} (${it.qty}kg) - ₹${it.total.toFixed(0)}\n`; });
-            msg += `\n*TOTAL: ₹${document.getElementById('grandTotal').innerText}*`;
+            msg += `━━━━━━━━━━━━━━\n💰 *TOTAL: ₹${document.getElementById('grandTotal').innerText}*`;
             window.open(`https://wa.me/918589944310?text=${encodeURIComponent(msg)}`);
         }
 
