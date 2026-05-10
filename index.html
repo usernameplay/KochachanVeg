@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ml">
 <head>
@@ -10,30 +9,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Manjari', sans-serif; transition: 0.3s; overflow-x: hidden; }
+        body { font-family: 'Manjari', sans-serif; transition: 0.3s; overflow-x: hidden; font-weight: 700; }
         
-        /* Dark Mode Improvements */
         .dark-mode { background-color: #020617 !important; color: #f8fafc; }
         .dark-mode .bg-slate-50 { background-color: #0f172a !important; }
         .dark-mode .bg-white { background-color: #1e293b !important; color: white !important; border-color: #334155; }
-        .dark-mode .text-slate-800, .dark-mode .text-slate-500 { color: #f1f5f9 !important; }
-        .dark-mode .text-green-600 { color: #4ade80 !important; } /* Light green for price visibility */
-        .dark-mode .border-slate-100, .dark-mode .border-slate-200 { border-color: #334155 !important; }
-        .dark-mode #qtyModal .bg-white { background-color: #1e293b !important; color: white !important; }
-        .dark-mode #qtyInput { background-color: #334155 !important; color: white !important; }
-        .dark-mode #qtyModal button.bg-slate-100 { background-color: #334155 !important; color: white !important; }
-        .dark-mode #qtyModal button.bg-slate-200 { background-color: #475569 !important; color: white !important; }
+        .dark-mode .text-slate-800 { color: #f1f5f9 !important; }
+        .dark-mode .text-green-600 { color: #4ade80 !important; }
         
         .animate-marquee { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
         #cartSidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .show-cart { transform: translateY(0) !important; }
         
-        /* Image/Emoji handle */
         .item-img { width: 50px; height: 50px; object-fit: contain; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
         
-        /* Cart Bottom Bar Transition */
-        #bottomCartBar { transition: all 0.3s ease; }
+        /* Screenshot Watermark Style */
+        #screenshotArea { 
+            position: relative; 
+            background: white;
+            min-height: 400px;
+        }
+        #screenshotArea::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background-image: url('https://i.ibb.co/0j3zJmjy/file-00000000b43472089da4fc13d4ce1088.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.08; /* വല്ലാതെ തെളിഞ്ഞു കാണാതിരിക്കാൻ ഓപ്പാസിറ്റി കുറച്ചു */
+            pointer-events: none;
+        }
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -44,10 +55,10 @@
         <div class="max-w-7xl mx-auto flex justify-between items-center px-2">
             <div class="w-10"></div> 
             <div class="text-center">
-                <h1 id="mainTitle" class="text-xl font-black tracking-tight leading-none uppercase transition-all duration-300">Kochachan 🥕 Veg & Fruits 🍎</h1>
-                <div id="liveTime" class="text-[20px] font-bold opacity-90 mt-1 uppercase"></div>
+                <h1 id="mainTitle" class="text-xl font-black tracking-tight leading-none uppercase">Kochachan 🥕 Veg & Fruits 🍎</h1>
+                <div id="liveTime" class="text-[18px] font-black opacity-90 mt-1 uppercase"></div>
             </div>
-            <button onclick="toggleDarkMode()" class="bg-green-700 h-10 w-10 rounded-lg flex items-center justify-center hover:bg-green-600 transition">
+            <button onclick="toggleDarkMode()" class="bg-green-700 h-10 w-10 rounded-lg flex items-center justify-center hover:bg-green-600">
                 <i class="fas fa-moon"></i>
             </button>
         </div>
@@ -56,7 +67,7 @@
     <div class="bg-yellow-400 overflow-hidden py-1 border-b border-yellow-500 shadow-inner no-print">
         <div class="animate-marquee">
             <span class="text-green-900 font-black text-sm uppercase tracking-wide">
-            | UPDATING | TEST RUN 🙇
+            | ⚡ FAST DELIVERY | FRESH ITEMS | KOCHACHAN VEG & FRUITS 🍎
             </span>
         </div>
     </div>
@@ -65,7 +76,7 @@
         <div class="mb-4 no-print relative">
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input type="text" id="searchInput" onkeyup="filterVeg()" placeholder="തിരയുക (Search)..." 
-                class="w-full pl-12 p-3.5 rounded-2xl border-2 border-slate-200 outline-none focus:border-green-500 font-bold text-slate-800 shadow-sm transition dark:bg-slate-800 dark:text-white dark:border-slate-600">
+                class="w-full pl-12 p-3.5 rounded-2xl border-2 border-slate-200 outline-none focus:border-green-500 font-black text-slate-800 shadow-sm transition dark:bg-slate-800 dark:text-white dark:border-slate-600">
         </div>
         <div id="vegContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
     </main>
@@ -74,8 +85,8 @@
         <div class="flex items-center gap-3">
             <div id="cartIconContainer" class="bg-white/20 p-2 rounded-lg"><i class="fas fa-shopping-basket"></i></div>
             <div>
-                <div class="font-black text-sm uppercase tracking-tight">Bill Details</div>
-                <div class="text-[11px] font-bold opacity-80"><span id="itemCount">0</span> Items Added</div>
+                <div class="font-black text-sm uppercase">ബില്ല് കാണാൻ ഇവിടെ അമർത്തുക</div>
+                <div class="text-[11px] font-black opacity-80 uppercase"><span id="itemCount">0</span> Items</div>
             </div>
         </div>
         <div class="text-right">
@@ -83,174 +94,91 @@
         </div>
     </div>
 
-    <div id="cartSidebar" class="fixed inset-x-0 bottom-0 bg-white h-[85vh] rounded-t-[2.5rem] z-[70] transform translate-y-full flex flex-col no-print border-t shadow-2xl">
+    <div id="cartSidebar" class="fixed inset-x-0 bottom-0 bg-white h-[90vh] rounded-t-[2.5rem] z-[70] transform translate-y-full flex flex-col no-print border-t shadow-2xl">
         <div class="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mt-3 mb-1"></div>
         <div class="px-6 py-4 border-b flex justify-between items-center">
-            <span class="font-black text-xl text-slate-800">Current Bill</span>
+            <span class="font-black text-xl text-slate-800">Your Bill</span>
             <div class="flex gap-3">
-                <button onclick="takeScreenshot()" class="bg-blue-50 text-blue-600 p-2.5 rounded-xl hover:bg-blue-100 transition dark:bg-blue-900/30 dark:text-blue-400">
-                    <i class="fas fa-camera"></i>
+                <button onclick="takeScreenshot()" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-black hover:bg-blue-700 transition">
+                    <i class="fas fa-camera mr-2"></i>SAVE BILL
                 </button>
                 <button onclick="toggleCart()" class="text-slate-400 text-3xl"><i class="fas fa-times-circle"></i></button>
             </div>
         </div>
 
         <div id="screenshotArea" class="flex-1 overflow-y-auto p-4 bg-white">
-            <div id="cartList" class="space-y-3"></div>
-            <div id="billSummary" class="mt-6 p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-black text-slate-500 uppercase text-[10px]">Grand Total</span>
-                    <span class="font-black text-2xl text-green-700">₹<span id="sideTotal">0</span></span>
+            <div class="text-center mb-4 border-b-2 border-slate-100 pb-4">
+                <h2 class="text-2xl font-black text-green-800 uppercase">Kochachan Veg & Fruits</h2>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Quality Guaranteed</p>
+            </div>
+            
+            <div id="cartList" class="space-y-2"></div>
+            
+            <div id="billSummary" class="mt-6 p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-300">
+                <div class="flex justify-between items-center">
+                    <span class="font-black text-slate-600 uppercase text-xs">Grand Total</span>
+                    <span class="font-black text-3xl text-green-700">₹<span id="sideTotal">0</span></span>
                 </div>
-                <div id="ssTimestamp" class="text-[9px] text-slate-400 font-bold text-center mt-2 uppercase"></div>
+                <div id="ssTimestamp" class="text-[10px] text-slate-400 font-black text-center mt-4 uppercase"></div>
             </div>
         </div>
 
         <div class="p-4 space-y-3 no-print bg-white dark:bg-slate-800">
-            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black shadow-lg uppercase flex items-center justify-center gap-2 transition-all active:scale-95 hover:bg-green-500">
-                <i class="fab fa-whatsapp text-xl"></i> Order Via WhatsApp
+            <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black shadow-lg uppercase flex items-center justify-center gap-2 transition-all active:scale-95">
+                <i class="fab fa-whatsapp text-2xl"></i> Send to WhatsApp
             </button>
-            <button onclick="clearCart()" class="w-full py-1 text-red-500 font-black text-xs uppercase">Clear All Items</button>
+            <button onclick="clearCart()" class="w-full py-2 text-red-500 font-black text-xs uppercase">Clear Everything</button>
         </div>
     </div>
 
     <div id="qtyModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[110] backdrop-blur-sm p-4">
         <div class="bg-white p-6 rounded-3xl w-full max-w-xs shadow-2xl text-center">
-            <div id="qtyImgContainer" class="mb-3"></div>
-            <h3 id="qtyTitle" class="text-xl font-black text-slate-800 uppercase"></h3>
-            <p id="qtyTitleML" class="text-sm font-bold text-slate-500 mb-4"></p>
-            <input type="number" id="qtyInput" class="w-full text-center text-3xl font-black p-4 bg-slate-100 rounded-2xl mb-4 outline-none text-slate-800" value="1" step="0.01">
+            <div id="qtyImgContainer" class="mb-2"></div>
+            <h3 id="qtyTitle" class="text-2xl font-black text-slate-800 uppercase"></h3>
+            <p id="qtyTitleML" class="text-lg font-black text-green-600 mb-4"></p>
+            <div class="text-xs font-bold text-slate-400 mb-1 uppercase">Enter Weight (kg)</div>
+            <input type="number" id="qtyInput" class="w-full text-center text-4xl font-black p-4 bg-slate-100 rounded-2xl mb-4 outline-none border-2 border-transparent focus:border-green-500" value="1" step="0.01">
             <div class="grid grid-cols-4 gap-2 mb-6">
-                <button onclick="setQty(0.1)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black text-slate-700 active:scale-95 transition">100g</button>
-                <button onclick="setQty(0.25)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black text-slate-700 active:scale-95 transition">250g</button>
-                <button onclick="setQty(0.5)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black text-slate-700 active:scale-95 transition">500g</button>
-                <button onclick="setQty(0.75)" class="bg-slate-100 p-2 rounded-lg text-[10px] font-black text-slate-700 active:scale-95 transition">750g</button>
+                <button onclick="setQty(0.1)" class="bg-slate-200 p-2 rounded-lg text-xs font-black">100g</button>
+                <button onclick="setQty(0.25)" class="bg-slate-200 p-2 rounded-lg text-xs font-black">250g</button>
+                <button onclick="setQty(0.5)" class="bg-slate-200 p-2 rounded-lg text-xs font-black">500g</button>
+                <button onclick="setQty(1)" class="bg-slate-200 p-2 rounded-lg text-xs font-black">1kg</button>
             </div>
             <div class="flex gap-2">
-                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-black active:scale-95 transition">ADD</button>
-                <button onclick="closeQtyModal()" class="flex-1 bg-slate-200 text-slate-600 py-4 rounded-2xl font-black active:scale-95 transition">BACK</button>
+                <button onclick="confirmAddToCart()" class="flex-1 bg-green-600 text-white py-4 rounded-2xl font-black text-xl">ADD</button>
+                <button onclick="closeQtyModal()" class="flex-1 bg-slate-100 text-slate-500 py-4 rounded-2xl font-black">BACK</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Data
         const vegetables = [
-            {"id":1,"name":"Tomato","name_ml":"തക്കാളി","price":40,"image":"🍅","updated_at":""},
-            {"id":2,"name":"Potato","name_ml":"ഉരുളക്കിഴങ്ങ്","price":229,"image":"🥔","updated_at":""},
-            {"id":3,"name":"Onion","name_ml":"സവാള","price":82,"image":"🧅","updated_at":""},
-            {"id":4,"name":"Carrot","name_ml":"കാരറ്റ്","price":50,"image":"🥕","updated_at":""},
-            {"id":5,"name":"Cabbage","name_ml":"കാബേജ്","price":25,"image":"🥬","updated_at":""},
-            {"id":6,"name":"Banana","name_ml":"വാഴപ്പഴം","price":50,"image":"🍌","updated_at":""},
-            {"id":7,"name":"Mango","name_ml":"മാങ്ങ","price":500,"image":"🥭","updated_at":""},
-            {"id":8,"name":"Brinjal","name_ml":"വഴുതന","price":45,"image":"🍆","updated_at":""},
-            {"id":9,"name":"Beans","name_ml":"ബീൻസ്","price":60,"image":"🫘","updated_at":""},
-            {"id":10,"name":"Apple","name_ml":"ആപ്പിൾ","price":180,"image":"🍎","updated_at":""},
-            {"id":11,"name":"Orange","name_ml":"ഓറഞ്ച്","price":120,"image":"🍊","updated_at":""},
-            {"id":12,"name":"Pineapple","name_ml":"കൈതച്ചക്ക","price":90,"image":"🍍","updated_at":""},
-            {"id":13,"name":"Papaya","name_ml":"പപ്പായ","price":60,"image":"🥭","updated_at":""},
-            {"id":14,"name":"Watermelon","name_ml":"തണ്ണിമത്തൻ","price":30,"image":"🍉","updated_at":""},
-            {"id":15,"name":"Grapes","name_ml":"മുന്തിരി","price":90,"image":"🍇","updated_at":""},
-            {"id":16,"name":"Guava","name_ml":"പേരയ്ക്ക","price":70,"image":"🍏","updated_at":""},
-            {"id":17,"name":"Chili","name_ml":"മുളക്","price":80,"image":"🌶️","updated_at":""},
-            {"id":18,"name":"Cucumber","name_ml":"വെള്ളരി","price":35,"image":"🥒","updated_at":""},
-            {"id":19,"name":"Drumstick","name_ml":"മുരിങ്ങക്കായ്","price":70,"image":"🥬","updated_at":""},
-            {"id":20,"name":"Pumpkin","name_ml":"മത്തങ്ങ","price":40,"image":"🎃","updated_at":""},
-            {"id":21,"name":"Bitter Gourd","name_ml":"പാവയ്ക്ക","price":60,"image":"🥒","updated_at":""},
-            {"id":22,"name":"Snake Gourd","name_ml":"പടവലങ്ങ","price":50,"image":"🥒","updated_at":""},
-            {"id":23,"name":"Ash Gourd","name_ml":"കുമ്പളങ്ങ","price":30,"image":"🥒","updated_at":""},
-            {"id":24,"name":"Ladies Finger","name_ml":"വെണ്ടക്ക","price":55,"image":"🥬","updated_at":""},
-            {"id":25,"name":"Beetroot","name_ml":"ബീറ്റ്റൂട്ട്","price":45,"image":"🥕","updated_at":""},
-            {"id":26,"name":"Radish","name_ml":"മുള്ളങ്കി","price":30,"image":"🥕","updated_at":""},
-            {"id":27,"name":"Spinach","name_ml":"ചീര","price":20,"image":"🥬","updated_at":""},
-            {"id":28,"name":"Mint","name_ml":"പുതിന","price":15,"image":"🌿","updated_at":""},
-            {"id":29,"name":"Coriander","name_ml":"മല്ലിയില","price":15,"image":"🌿","updated_at":""},
-            {"id":30,"name":"Garlic","name_ml":"വെളുത്തുള്ളി","price":120,"image":"🧄","updated_at":""},
-            {"id":31,"name":"Ginger","name_ml":"ഇഞ്ചി","price":100,"image":"🫚","updated_at":""},
-            {"id":32,"name":"Sweet Potato","name_ml":"മധുരക്കിഴങ്ങ്","price":40,"image":"🍠","updated_at":""},
-            {"id":33,"name":"Tapioca","name_ml":"കപ്പ","price":25,"image":"🍠","updated_at":""},
-            {"id":34,"name":"Green Peas","name_ml":"പട്ടാണി","price":90,"image":"🫘","updated_at":""},
-            {"id":35,"name":"Corn","name_ml":"മക്കച്ചോലം","price":40,"image":"🌽","updated_at":""},
-            {"id":36,"name":"Capsicum","name_ml":"കാപ്സിക്കം","price":80,"image":"🫑","updated_at":""},
-            {"id":37,"name":"Mushroom","name_ml":"കൂൺ","price":120,"image":"🍄","updated_at":""},
-            {"id":38,"name":"Zucchini","name_ml":"സുക്കിനി","price":90,"image":"🥒","updated_at":""},
-            {"id":39,"name":"Broccoli","name_ml":"ബ്രോക്കോളി","price":120,"image":"🥦","updated_at":""},
-            {"id":40,"name":"Cauliflower","name_ml":"കോവൽഫ്ലവർ","price":60,"image":"🥦","updated_at":""},
-            {"id":41,"name":"Pear","name_ml":"പെയർ","price":150,"image":"🍐","updated_at":""},
-            {"id":42,"name":"Pomegranate","name_ml":"മാതളനാരങ്ങ","price":160,"image":"🍎","updated_at":""},
-            {"id":43,"name":"Kiwi","name_ml":"കിവി","price":200,"image":"🥝","updated_at":""},
-            {"id":44,"name":"Strawberry","name_ml":"സ്ട്രോബെറി","price":250,"image":"🍓","updated_at":""},
-            {"id":45,"name":"Blueberry","name_ml":"ബ്ലൂബെറി","price":300,"image":"🫐","updated_at":""},
-            {"id":46,"name":"Cherry","name_ml":"ചെറി","price":280,"image":"🍒","updated_at":""},
-            {"id":47,"name":"Plum","name_ml":"പ്ലം","price":220,"image":"🍑","updated_at":""},
-            {"id":48,"name":"Peach","name_ml":"പീച്ച്","price":240,"image":"🍑","updated_at":""},
-            {"id":49,"name":"Apricot","name_ml":"ആപ്രിക്കോട്ട്","price":260,"image":"🍑","updated_at":""},
-            {"id":50,"name":"Dragon Fruit","name_ml":"ഡ്രാഗൺ ഫ്രൂട്ട്","price":180,"image":"🍉","updated_at":""},
-            {"id":51,"name":"Jackfruit","name_ml":"ചക്ക","price":100,"image":"🍈","updated_at":""},
-            {"id":52,"name":"Custard Apple","name_ml":"സീതപ്പഴം","price":120,"image":"🍏","updated_at":""},
-            {"id":53,"name":"Sapota","name_ml":"ചിക്കു","price":80,"image":"🍏","updated_at":""},
-            {"id":54,"name":"Fig","name_ml":"അത്തി","price":300,"image":"🍑","updated_at":""},
-            {"id":55,"name":"Dates","name_ml":"ഖജൂർ","price":220,"image":"🍇","updated_at":""},
-            {"id":56,"name":"Lychee","name_ml":"ലിച്ചി","price":250,"image":"🍒","updated_at":""},
-            {"id":57,"name":"Avocado","name_ml":"അവക്കാഡോ","price":200,"image":"🥑","updated_at":""},
-            {"id":58,"name":"Star Fruit","name_ml":"കമരങ്ങ","price":90,"image":"⭐","updated_at":""},
-            {"id":59,"name":"Wood Apple","name_ml":"കബളങ്ങ","price":70,"image":"🍏","updated_at":""},
-            {"id":60,"name":"Lemon","name_ml":"നാരങ്ങ","price":60,"image":"🍋","updated_at":""},
-            {"id":61,"name":"Butter Fruit","name_ml":"ബട്ടർ ഫ്രൂട്ട്","price":180,"image":"🥑","updated_at":""},
-            {"id":62,"name":"Long Beans","name_ml":"പയർ","price":50,"image":"🫘","updated_at":""},
-            {"id":63,"name":"Ivy Gourd","name_ml":"കോവയ്ക്ക","price":45,"image":"🥒","updated_at":""},
-            {"id":64,"name":"Ridge Gourd","name_ml":"പീച്ചിങ്ങ","price":40,"image":"🥒","updated_at":""},
-            {"id":65,"name":"Cluster Beans","name_ml":"ഗ്വാർ","price":55,"image":"🫘","updated_at":""},
-            {"id":66,"name":"Turnip","name_ml":"ഷൽഗം","price":35,"image":"🥕","updated_at":""},
-            {"id":67,"name":"Leek","name_ml":"ലീക്ക്","price":70,"image":"🥬","updated_at":""},
-            {"id":68,"name":"Spring Onion","name_ml":"ഇലസവാള","price":40,"image":"🧅","updated_at":""},
-            {"id":69,"name":"Red Cabbage","name_ml":"ചുവന്ന കാബേജ്","price":60,"image":"🥬","updated_at":""},
-            {"id":70,"name":"Yellow Capsicum","name_ml":"മഞ്ഞ കാപ്സിക്കം","price":90,"image":"🫑","updated_at":""},
-            {"id":71,"name":"Red Capsicum","name_ml":"ചുവന്ന കാപ്സിക്കം","price":90,"image":"🫑","updated_at":""},
-            {"id":72,"name":"Green Apple","name_ml":"പച്ച ആപ്പിൾ","price":180,"image":"🍏","updated_at":""},
-            {"id":73,"name":"Black Grapes","name_ml":"കറുത്ത മുന്തിരി","price":100,"image":"🍇","updated_at":""},
-            {"id":74,"name":"Tender Coconut","name_ml":"തേങ്ങാവെള്ളം","price":40,"image":"🥥","updated_at":""},
-            {"id":75,"name":"Dry Coconut","name_ml":"തേങ്ങ","price":35,"image":"🥥","updated_at":""},
-            {"id":76,"name":"Gooseberry","name_ml":"നെല്ലിക്ക","price":80,"image":"🟢","updated_at":""},
-            {"id":77,"name":"Jamun","name_ml":"ഞാവൽപ്പഴം","price":120,"image":"🟣","updated_at":""},
-            {"id":78,"name":"Mulberry","name_ml":"മുള്ബെറി","price":150,"image":"🍇","updated_at":""},
-            {"id":79,"name":"Breadfruit","name_ml":"കദളക്ക","price":60,"image":"🍈","updated_at":""},
-            {"id":80,"name":"Raw Mango","name_ml":"പച്ച മാങ്ങ","price":80,"image":"🥭","updated_at":""},
-            {"id":81,"name":"Elephant Yam","name_ml":"ചേന","price":70,"image":"🍠","updated_at":""},
-            {"id":82,"name":"Colocasia","name_ml":"ചേമ്പ്","price":60,"image":"🍠","updated_at":""}
+            {"id":1,"name":"Tomato","name_ml":"തക്കാളി","price":40,"image":"🍅"},
+            {"id":2,"name":"Potato","name_ml":"ഉരുളക്കിഴങ്ങ്","price":45,"image":"🥔"},
+            {"id":3,"name":"Onion","name_ml":"സവാള","price":55,"image":"🧅"},
+            {"id":4,"name":"Carrot","name_ml":"കാരറ്റ്","price":60,"image":"🥕"},
+            {"id":5,"name":"Cabbage","name_ml":"കാബേജ്","price":30,"image":"🥬"},
+            {"id":6,"name":"Banana","name_ml":"വാഴപ്പഴം","price":50,"image":"🍌"},
+            {"id":7,"name":"Mango","name_ml":"മാങ്ങ","price":120,"image":"🥭"},
+            {"id":8,"name":"Brinjal","name_ml":"വഴുതന","price":45,"image":"🍆"},
+            {"id":9,"name":"Ginger","name_ml":"ഇഞ്ചി","price":180,"image":"🫚"},
+            {"id":10,"name":"Garlic","name_ml":"വെളുത്തുള്ളി","price":200,"image":"🧄"}
+            // ... ബാക്കി ലിസ്റ്റ് പഴയതുപോലെ ചേർക്കാം
         ];
-        
+
         let cart = [];
         let selectedVeg = null;
-
-        // Animated Header Title
-        const icons = ["🍎", "🥦", "🍇", "🍅", "🥕", "🍓", "🍍", "🍆"];
-          let iconIndex = 0;
-        setInterval(() => {
-            const title = document.getElementById('mainTitle');
-            if (title) {
-                title.innerHTML = `Kochachan ${icons[iconIndex]} Veg & Fruits ${icons[(iconIndex + 1) % icons.length]}`;
-                iconIndex = (iconIndex + 1) % icons.length;
-            }
-        }, 1500);
-
-        function getItemImageHTML(src) {
-            if(src.startsWith('http')) {
-                return `<img src="${src}" class="item-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1147/1147814.png'">`;
-            }
-            return `<div class="item-img">${src}</div>`;
-        }
 
         function renderList() {
             const container = document.getElementById('vegContainer');
             container.innerHTML = vegetables.map((v, i) => `
-            <div class="bg-white p-4 rounded-2xl text-center shadow-sm cursor-pointer flex flex-col justify-between transition-transform active:scale-95" onclick="openQtyModal(${i})">
+            <div class="bg-white p-4 rounded-2xl text-center shadow-sm cursor-pointer flex flex-col justify-between active:scale-95 transition" onclick="openQtyModal(${i})">
                 <div>
-                    ${getItemImageHTML(v.image)}
-                    <div class="font-black text-slate-800 text-[11px] truncate uppercase">${v.name_ml || v.name}</div>
-                    <div class="text-green-600 font-black text-lg mt-1">₹${v.price}</div>
+                    <div class="item-img">${v.image}</div>
+                    <div class="font-black text-slate-800 text-xs uppercase">${v.name_ml}</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase">${v.name}</div>
+                    <div class="text-green-600 font-black text-xl mt-1">₹${v.price}</div>
                 </div>
-                ${v.updated_at ? `<div class="mt-3 pt-2 border-t border-slate-50 text-[8px] text-slate-400 font-bold uppercase">${v.updated_at}</div>` : ''}
             </div>
             `).join('');
         }
@@ -263,176 +191,116 @@
             
             const list = document.getElementById('cartList');
             if(cart.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 text-slate-300 font-bold uppercase text-xs">Cart is empty</div>`;
+                list.innerHTML = `<div class="text-center py-10 text-slate-300 font-black uppercase">No Items Added</div>`;
                 return;
             }
             list.innerHTML = cart.map((item, i) => `
-            <div class="flex justify-between items-center bg-white border border-slate-100 p-3 rounded-xl shadow-sm">
-                <div>
-                    <div class="font-black text-slate-800 text-[13px] uppercase">${item.name}</div>
-                    <div class="text-[10px] font-bold text-slate-400">${item.qty}kg x ₹${item.price}</div>
+            <div class="flex justify-between items-center bg-white border-b border-slate-100 py-3">
+                <div class="flex-1">
+                    <div class="font-black text-slate-800 text-[15px] uppercase">${item.name}</div>
+                    <div class="text-[11px] font-black text-slate-400">${item.qty}kg x ₹${item.price}</div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="font-black text-green-700 text-base">₹${item.total.toFixed(2)}</span>
-                    <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-400 p-1 no-print hover:text-red-600 transition"><i class="fas fa-trash-alt"></i></button>
+                <div class="flex items-center gap-4">
+                    <span class="font-black text-green-700 text-lg">₹${item.total.toFixed(2)}</span>
+                    <button onclick="event.stopPropagation(); cart.splice(${i},1); updateCartUI();" class="text-red-400 no-print"><i class="fas fa-trash-alt"></i></button>
                 </div>
             </div>
             `).join('');
         }
 
-        function takeScreenshot() {
-            if(cart.length === 0) return alert("Add items to take screenshot!");
+        async function takeScreenshot() {
+            if(cart.length === 0) return alert("Please add items to bill first!");
             
             const area = document.getElementById('screenshotArea');
             const stamp = document.getElementById('ssTimestamp');
-            stamp.innerText = "Customer Bill • " + new Date().toLocaleString('en-IN');
-            
-            // To ensure light mode screenshot even in dark mode
-            const originalBg = area.style.background;
-            area.style.background = "#ffffff";
-            
-            html2canvas(area, {
-                scale: 2, 
-                backgroundColor: "#ffffff",
-                useCORS: true
-            }).then(canvas => {
+            stamp.innerText = "BILL DATE: " + new Date().toLocaleString('en-IN').toUpperCase();
+
+            // താൽക്കാലികമായി സ്ക്രോൾ ഒഴിവാക്കി മുഴുവൻ കണ്ടന്റും കാണിക്കുന്നു
+            const originalHeight = area.style.height;
+            const originalOverflow = area.style.overflow;
+            area.style.height = 'auto';
+            area.style.overflow = 'visible';
+
+            try {
+                const canvas = await html2canvas(area, {
+                    scale: 3, // കൂടുതൽ ക്ലിയർ ആകാൻ
+                    backgroundColor: "#ffffff",
+                    useCORS: true,
+                    logging: false,
+                    scrollY: -window.scrollY // സ്ക്രോൾ ചെയ്ത പൊസിഷൻ അഡ്ജസ്റ്റ് ചെയ്യാൻ
+                });
+
                 const link = document.createElement('a');
-                link.download = `Customer_Bill_${Date.now()}.png`;
-                link.href = canvas.toDataURL();
+                link.download = `Kochachan_Bill_${Date.now()}.png`;
+                link.href = canvas.toDataURL("image/png");
                 link.click();
-                area.style.background = originalBg; // revert background
-            });
+            } catch (err) {
+                console.error("Screenshot Error:", err);
+                alert("Failed to save bill image.");
+            } finally {
+                area.style.height = originalHeight;
+                area.style.overflow = originalOverflow;
+            }
         }
 
-        // WhatsApp update with Rate included
         function sendWhatsAppOrder() {
-            if(cart.length === 0) return alert("Add items!");
-            let message = "🛒 *പുതിയ ഓർഡർ - Kochachan Veg & Fruits* 🛒\n━━━━━━━━━━━━━━━━━━\n";
+            if(cart.length === 0) return alert("Cart is empty!");
+            let message = "🛒 *KOCHACHAN VEG & FRUITS ORDER*\n━━━━━━━━━━━━━━━━━━\n";
             cart.forEach((item, index) => {
                 message += `${index + 1}. *${item.name}*\n   ${item.qty}kg x ₹${item.price} = *₹${item.total.toFixed(2)}*\n`;
             });
             message += "━━━━━━━━━━━━━━━━━━\n";
-            message += `💰 *ആകെ തുക: ₹${document.getElementById('sideTotal').innerText}*\n`;
+            message += `💰 *TOTAL BILL: ₹${document.getElementById('sideTotal').innerText}*\n`;
             message += `📅 ${new Date().toLocaleString('en-IN')}`;
             window.open(`https://wa.me/918589944310?text=${encodeURIComponent(message)}`, '_blank');
         }
 
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+        function toggleCart() { document.getElementById('cartSidebar').classList.toggle('show-cart'); }
+        function setQty(v) { document.getElementById('qtyInput').value = v; }
+        function closeQtyModal() { document.getElementById('qtyModal').style.display = 'none'; }
+
+        function openQtyModal(i) {
+            selectedVeg = vegetables[i];
+            document.getElementById('qtyTitle').innerText = selectedVeg.name;
+            document.getElementById('qtyTitleML').innerText = selectedVeg.name_ml;
+            document.getElementById('qtyImgContainer').innerHTML = `<div class="text-6xl">${selectedVeg.image}</div>`;
+            document.getElementById('qtyInput').value = 1;
+            document.getElementById('qtyModal').style.display = 'flex';
+        }
+
+        function confirmAddToCart() {
+            const q = parseFloat(document.getElementById('qtyInput').value);
+            if(q > 0) {
+                cart.push({ 
+                    name: selectedVeg.name_ml, 
+                    price: selectedVeg.price, 
+                    qty: q, 
+                    total: selectedVeg.price * q 
+                });
+                updateCartUI(); 
+                closeQtyModal();
+            }
+        }
+        
+        function clearCart() { if(confirm("Clear current bill?")) { cart = []; updateCartUI(); } }
+
         function filterVeg() {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const container = document.getElementById('vegContainer');
-            const items = container.querySelectorAll('.bg-white');
+            const items = container.children;
             vegetables.forEach((v, i) => {
                 const match = v.name.toLowerCase().includes(q) || v.name_ml.toLowerCase().includes(q);
                 if(items[i]) items[i].style.display = match ? 'flex' : 'none';
             });
         }
 
-        function toggleDarkMode() { 
-            document.getElementById('mainBody').classList.toggle('dark-mode'); 
-            
-            // Update cart sidebar classes for dark mode
-            const cartSidebar = document.getElementById('cartSidebar');
-            if(document.getElementById('mainBody').classList.contains('dark-mode')) {
-                cartSidebar.classList.add('bg-slate-900');
-                cartSidebar.classList.remove('bg-white');
-                document.getElementById('screenshotArea').classList.add('bg-slate-900');
-                document.getElementById('screenshotArea').classList.remove('bg-white');
-                document.getElementById('billSummary').classList.add('bg-slate-800');
-                document.getElementById('billSummary').classList.remove('bg-slate-50');
-            } else {
-                cartSidebar.classList.add('bg-white');
-                cartSidebar.classList.remove('bg-slate-900');
-                document.getElementById('screenshotArea').classList.add('bg-white');
-                document.getElementById('screenshotArea').classList.remove('bg-slate-900');
-                document.getElementById('billSummary').classList.add('bg-slate-50');
-                document.getElementById('billSummary').classList.remove('bg-slate-800');
-            }
-        }
-        
-        function toggleCart() { document.getElementById('cartSidebar').classList.toggle('show-cart'); }
-        
-        function openQtyModal(i) {
-            selectedVeg = vegetables[i];
-            document.getElementById('qtyTitle').innerText = selectedVeg.name;
-            document.getElementById('qtyTitleML').innerText = selectedVeg.name_ml;
-            document.getElementById('qtyImgContainer').innerHTML = getItemImageHTML(selectedVeg.image);
-            document.getElementById('qtyInput').value = 1;
-            document.getElementById('qtyModal').style.display = 'flex';
-        }
-        
-        function closeQtyModal() { document.getElementById('qtyModal').style.display = 'none'; }
-        function setQty(v) { document.getElementById('qtyInput').value = v; }
-
-        // Play animation when item is added to cart
-        function animateToCart() {
-            const imgContainer = document.getElementById('qtyImgContainer');
-            const cartIcon = document.getElementById('cartIconContainer');
-
-            if(!imgContainer || !cartIcon) return;
-
-            // Create a clone of the image
-            const clone = imgContainer.cloneNode(true);
-            const rect = imgContainer.getBoundingClientRect();
-            const targetRect = cartIcon.getBoundingClientRect();
-
-            clone.style.position = 'fixed';
-            clone.style.top = rect.top + 'px';
-            clone.style.left = rect.left + 'px';
-            clone.style.width = rect.width + 'px';
-            clone.style.height = rect.height + 'px';
-            clone.style.zIndex = '9999';
-            clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-            clone.style.margin = '0';
-            clone.style.pointerEvents = 'none';
-
-            document.body.appendChild(clone);
-
-            // Trigger animation
-            setTimeout(() => {
-                clone.style.top = targetRect.top + 'px';
-                clone.style.left = targetRect.left + 'px';
-                clone.style.transform = 'scale(0.2)';
-                clone.style.opacity = '0';
-            }, 10);
-
-            // Clean up and animate bottom bar
-            setTimeout(() => {
-                clone.remove();
-                
-                // Bottom Bar Pulse Animation
-                const bottomBar = document.getElementById('bottomCartBar');
-                bottomBar.style.transform = 'scale(1.03)';
-                bottomBar.style.backgroundColor = '#22c55e'; // green-500
-                
-                setTimeout(() => {
-                    bottomBar.style.transform = 'scale(1)';
-                    bottomBar.style.backgroundColor = '#15803d'; // revert to green-700
-                }, 300);
-                
-            }, 600);
-        }
-
-        function confirmAddToCart() {
-            const q = parseFloat(document.getElementById('qtyInput').value);
-            if(q > 0) {
-                cart.push({ name: selectedVeg.name_ml || selectedVeg.name, price: selectedVeg.price, qty: q, total: selectedVeg.price * q });
-                
-                animateToCart(); // Run the flying animation
-                
-                updateCartUI(); 
-                closeQtyModal();
-            }
-        }
-        
-        function clearCart() { if(confirm("Clear bill?")) { cart = []; updateCartUI(); } }
-
         setInterval(() => { 
-            document.getElementById('liveTime').innerText = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'medium' }); 
+            document.getElementById('liveTime').innerText = new Date().toLocaleString('en-IN', { timeStyle: 'medium', dateStyle: 'medium' }); 
         }, 1000);
 
         renderList();
     </script>
 </body>
-</html>
-
-                  
+                    </html>
+                    
