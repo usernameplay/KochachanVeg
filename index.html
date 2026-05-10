@@ -45,7 +45,7 @@
             <div class="w-10"></div> 
             <div class="text-center">
                 <h1 id="mainTitle" class="text-xl font-black tracking-tight leading-none uppercase transition-all duration-300">Kochachan 🥕 Veg & Fruits 🍎</h1>
-                <div id="liveTime" class="text-[10px] font-bold opacity-90 mt-1 uppercase"></div>
+                <div id="liveTime" class="text-[20px] font-bold opacity-90 mt-1 uppercase"></div>
             </div>
             <button onclick="toggleDarkMode()" class="bg-green-700 h-10 w-10 rounded-lg flex items-center justify-center hover:bg-green-600 transition">
                 <i class="fas fa-moon"></i>
@@ -56,7 +56,7 @@
     <div class="bg-yellow-400 overflow-hidden py-1 border-b border-yellow-500 shadow-inner no-print">
         <div class="animate-marquee">
             <span class="text-green-900 font-black text-sm uppercase tracking-wide">
-           🥬🍅🥕🧅🥔 | UPDATING | TEST RUN 🙇
+            | UPDATING | TEST RUN 🙇
             </span>
         </div>
     </div>
@@ -136,8 +136,8 @@
     <script>
         // Data
         const vegetables = [
-            {"id":1,"name":"Tomato","name_ml":"തക്കാളി","price":40,"image":"🍅","updated_at":"2026-04-18 10:30 AM"},
-            {"id":2,"name":"Potato","name_ml":"ഉരുളക്കിഴങ്ങ്","price":229,"image":"🥔","updated_at":"2026-04-19 10:30 AM"},
+            {"id":1,"name":"Tomato","name_ml":"തക്കാളി","price":40,"image":"🍅","updated_at":""},
+            {"id":2,"name":"Potato","name_ml":"ഉരുളക്കിഴങ്ങ്","price":229,"image":"🥔","updated_at":""},
             {"id":3,"name":"Onion","name_ml":"സവാള","price":82,"image":"🧅","updated_at":""},
             {"id":4,"name":"Carrot","name_ml":"കാരറ്റ്","price":50,"image":"🥕","updated_at":""},
             {"id":5,"name":"Cabbage","name_ml":"കാബേജ്","price":25,"image":"🥬","updated_at":""},
@@ -285,19 +285,19 @@
             
             const area = document.getElementById('screenshotArea');
             const stamp = document.getElementById('ssTimestamp');
-            stamp.innerText = "Kochachan Bill • " + new Date().toLocaleString('en-IN');
+            stamp.innerText = "Customer Bill • " + new Date().toLocaleString('en-IN');
             
             // To ensure light mode screenshot even in dark mode
             const originalBg = area.style.background;
             area.style.background = "#ffffff";
             
             html2canvas(area, {
-                scale: 3, 
+                scale: 2, 
                 backgroundColor: "#ffffff",
                 useCORS: true
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Kochachan_Bill_${Date.now()}.png`;
+                link.download = `Customer_Bill_${Date.now()}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
                 area.style.background = originalBg; // revert background
